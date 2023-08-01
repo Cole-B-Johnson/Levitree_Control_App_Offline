@@ -3,7 +3,6 @@ import './Fracking.css';
 import { useState, useEffect } from 'react';
 import { Container, Card, Row, Col, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 import ThreeStateToggle from '../../components/ThreeStateToggle/ThreeStateToggle';
-import { useEffect, useState } from 'react';
 import fs from 'fs';
 import path from 'path';
 
@@ -14,6 +13,7 @@ function ensureDirSync(dirPath) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
 }
+
 // get_pump_pressure
 function GetPumpPressure() {
     const [data, setData] = useState(null);
