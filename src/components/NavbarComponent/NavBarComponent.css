@@ -1,0 +1,20 @@
+.elevation {
+    position: sticky;
+    top: 0;
+    left: 0;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+  
+  .me-auto .link {
+    text-decoration: none;
+    color: black;
+    margin-inline-end: 20px;
+    padding: 10px 20px;
+    border-radius: 8px;
+  }
+  
+  .me-auto .link.active {
+    background-color: darkgray;
+    color: white;
+  }
+  
