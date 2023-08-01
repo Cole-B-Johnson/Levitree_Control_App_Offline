@@ -8,9 +8,6 @@ import fs from 'fs';
 import path from 'path';
 
 
-const fs = require('fs');
-const path = require('path');
-
 // Ensure directory exists
 function ensureDirSync(dirPath) {
     if (!fs.existsSync(dirPath)) {
