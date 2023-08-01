@@ -7,10 +7,21 @@ import { useEffect, useState } from 'react';
 import fs from 'fs';
 import path from 'path';
 
+
+const fs = require('fs');
+const path = require('path');
+
+// Ensure directory exists
+function ensureDirSync(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+}
 // get_pump_pressure
 function GetPumpPressure() {
     const [data, setData] = useState(null);
     const directoryPath = 'Live-Data-Pathways/Pump_Pressure/';
+    ensureDirSync(directoryPath);
 
     useEffect(() => {
         fs.readdir(directoryPath, (err, files) => {
@@ -49,6 +60,7 @@ function GetPumpPressure() {
 function GetMixTankDistance() {
     const [data, setData] = useState(null);
     const directoryPath = 'Live-Data-Pathways/Depth_Sensor/';
+    ensureDirSync(directoryPath);
 
     useEffect(() => {
         fs.readdir(directoryPath, (err, files) => {
@@ -87,6 +99,7 @@ function GetMixTankDistance() {
 function GetPressureData() {
     const [data, setData] = useState([]);
     const base_path = 'Live-Data-Pathways/Pipe_Pressure_Sensors/CubeCell';
+    ensureDirSync(directoryPath);
 
     useEffect(() => {
         for (let sensor_number = 1; sensor_number <= 6; sensor_number++) {
@@ -129,6 +142,7 @@ function GetPressureData() {
 function VfdOutput({ pump }) {
     const [data, setData] = useState([]);
     const directoryPath = `Live-Data-Pathways/${pump}/From_VFD`;
+    ensureDirSync(directoryPath);
 
     useEffect(() => {
         fs.readdir(directoryPath, (err, files) => {
@@ -167,6 +181,7 @@ function VfdOutput({ pump }) {
 function VfdInput({ pump, speed, drive_mode }) {
     const drive_mode_mapping = { "on": "fwd", "off": "rev", "null": "stop" };
     const directoryPath = `Live-Data-Pathways/${pump}/To_VFD`;
+    ensureDirSync(directoryPath);
     const filename = `command_${Date.now()}.json`;
     const filePath = path.join(directoryPath, filename);
 
