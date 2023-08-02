@@ -1,13 +1,13 @@
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const path = require('path');
+import express from 'express';
+import { readdir, readFile, writeFile } from 'fs';
+import { join } from 'path';
 
-// mimic the '/default/get_pump_pressure' endpoint
+const app = express();
+
 app.get('/default/get_pump_pressure', function (req, res) {
     const base_path = './Live-Data-Pathways/Pump_Pressure/';
 
-    fs.readdir(base_path, (err, files) => {
+    readdir(base_path, (err, files) => {
         if (err || files.length === 0) {
             console.log('No files in directory:', err);
             res.json(0.0);
@@ -22,7 +22,7 @@ app.get('/default/get_pump_pressure', function (req, res) {
             const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
             const latestFilePath = path.join(base_path, latestFile.name);
 
-            fs.readFile(latestFilePath, 'utf8', (err, data) => {
+            readFile(latestFilePath, 'utf8', (err, data) => {
                 if (err) {
                     console.log('Error reading file:', err);
                     res.json(0.0);
@@ -38,7 +38,7 @@ app.get('/default/vfd_output', function (req, res) {
     const pump = req.query.pump;
     const base_path = `./Live-Data-Pathways/${pump}/From_VFD`;
 
-    fs.readdir(base_path, (err, files) => {
+    readdir(base_path, (err, files) => {
         if (err || files.length === 0) {
             console.log('No files in directory:', err);
             res.json([]);
@@ -53,7 +53,7 @@ app.get('/default/vfd_output', function (req, res) {
             const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
             const latestFilePath = path.join(base_path, latestFile.name);
 
-            fs.readFile(latestFilePath, 'utf8', (err, data) => {
+            readFile(latestFilePath, 'utf8', (err, data) => {
                 if (err) {
                     console.log('Error reading file:', err);
                     res.json([]);
@@ -91,7 +91,7 @@ app.get('/default/vfd_input', function (req, res) {
         return res.status(500).json({ 'message': 'Improper key (not speed or drive_mode)' });
     }
 
-    fs.writeFile(file_path, JSON.stringify(file_contents), (err) => {
+    writeFile(file_path, JSON.stringify(file_contents), (err) => {
         if (err) {
             console.log('Error writing file:', err);
             return res.status(500).json({ 'message': err.message });
@@ -109,7 +109,7 @@ app.get('/default/get_pressure_data', function (req, res) {
         const sensor_dir = path.join(base_path, String(sensor_number));
         try {
             // Get the list of files in the directory
-            const files = fs.readdirSync(sensor_dir);
+            const files = readdirSync(sensor_dir);
 
             if (files.length == 0) {
                 throw new Error('No files in directory');
@@ -122,7 +122,7 @@ app.get('/default/get_pressure_data', function (req, res) {
             });
 
             // Get the contents of the file
-            const file_content = fs.readFileSync(path.join(sensor_dir, file_name), 'utf8');
+            const file_content = readFileSync(path.join(sensor_dir, file_name), 'utf8');
 
             // Assume the decoded content is a JSON object that needs processing
             const data = JSON.parse(file_content);
@@ -146,7 +146,7 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
 
     try {
         // Get the list of files in the directory
-        const files = fs.readdirSync(base_path);
+        const files = readdirSync(base_path);
 
         if (files.length === 0) {
             throw new Error('No files in directory');
@@ -159,7 +159,7 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
         });
 
         // Get the contents of the file
-        const file_content = fs.readFileSync(path.join(base_path, file_name), 'utf8');
+        const file_content = readFileSync(path.join(base_path, file_name), 'utf8');
 
         // Assume the decoded content is a JSON object that needs processing
         const data = JSON.parse(file_content);
