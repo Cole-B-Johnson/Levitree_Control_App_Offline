@@ -2,6 +2,7 @@ import express from 'express';
 import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
 import { exec } from 'child_process';
+import cors from 'cors'
 
 const app = express();
 app.use(cors());
