@@ -1,11 +1,20 @@
 import express from 'express';
-import { readdir, readFile, writeFile } from 'fs';
+import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
 
 const app = express();
 
+const createDirectoryIfNotExist = (dirPath) => {
+    mkdir(dirPath, { recursive: true }, (err) => {
+        if (err) {
+            console.log('Error creating directory:', err);
+        }
+    });
+};
+
 app.get('/default/get_pump_pressure', function (req, res) {
-    const base_path = './Live-Data-Pathways/Pump_Pressure/';
+    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
+    createDirectoryIfNotExist(base_path);
 
     readdir(base_path, (err, files) => {
         if (err || files.length === 0) {
@@ -20,7 +29,7 @@ app.get('/default/get_pump_pressure', function (req, res) {
             });
             
             const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
-            const latestFilePath = path.join(base_path, latestFile.name);
+            const latestFilePath = join(base_path, latestFile.name);
 
             readFile(latestFilePath, 'utf8', (err, data) => {
                 if (err) {
@@ -36,7 +45,8 @@ app.get('/default/get_pump_pressure', function (req, res) {
 
 app.get('/default/vfd_output', function (req, res) {
     const pump = req.query.pump;
-    const base_path = `./Live-Data-Pathways/${pump}/From_VFD`;
+    const base_path = `/home/levitree/Desktop/Live-Data-Pathways/${pump}/From_VFD`;
+    createDirectoryIfNotExist(base_path);
 
     readdir(base_path, (err, files) => {
         if (err || files.length === 0) {
@@ -51,7 +61,7 @@ app.get('/default/vfd_output', function (req, res) {
             });
             
             const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
-            const latestFilePath = path.join(base_path, latestFile.name);
+            const latestFilePath = join(base_path, latestFile.name);
 
             readFile(latestFilePath, 'utf8', (err, data) => {
                 if (err) {
@@ -70,15 +80,14 @@ app.get('/default/vfd_input', function (req, res) {
     const drive_mode_mapping = {"on": "fwd", "off": "rev", "null": "stop"}; // mapping dictionary
 
     const pump = req.query.pump;
-    const base_path = `./Live-Data-Pathways/${pump}/To_VFD`;
+    const base_path = `/home/levitree/Desktop/Live-Data-Pathways/${pump}/To_VFD`;
+    createDirectoryIfNotExist(base_path);
 
-    // Generate the file name based on the current UTC time
     const filename = `command_${Math.floor(Date.now() / 1000)}.json`;
-    const file_path = path.join(base_path, filename);
+    const file_path = join(base_path, filename);
 
     let file_contents;
 
-    // The contents to be written to the file
     if (req.query.speed !== undefined) {
         file_contents = { 'speed': req.query.speed };
     } else if (req.query.drive_mode !== undefined) {
@@ -86,7 +95,7 @@ app.get('/default/vfd_input', function (req, res) {
         if (!drive_mode_mapping[drive_mode_value]) {
             return res.status(500).json({ 'message': `Invalid drive_mode value: ${drive_mode_value}` });
         }
-        file_contents = { 'drive_mode': drive_mode_mapping[drive_mode_value] }; // use the mapping dictionary here
+        file_contents = { 'drive_mode': drive_mode_mapping[drive_mode_value] }; 
     } else {
         return res.status(500).json({ 'message': 'Improper key (not speed or drive_mode)' });
     }
@@ -101,80 +110,73 @@ app.get('/default/vfd_input', function (req, res) {
 });
 
 app.get('/default/get_pressure_data', function (req, res) {
-    const base_path = './Live-Data-Pathways/Pipe_Pressure_Sensors/CubeCell';
+    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pipe_Pressure_Sensors/CubeCell';
+    createDirectoryIfNotExist(base_path);
+
     let sensor_readings = [];
 
-    // Loop over each sensor
     for (let sensor_number = 1; sensor_number <= 6; sensor_number++) {
-        const sensor_dir = path.join(base_path, String(sensor_number));
-        try {
-            // Get the list of files in the directory
-            const files = readdirSync(sensor_dir);
+        const sensor_dir = join(base_path, String(sensor_number));
+        createDirectoryIfNotExist(sensor_dir);
 
-            if (files.length == 0) {
-                throw new Error('No files in directory');
+        readdir(sensor_dir, (err, files) => {
+            if (err || files.length === 0) {
+                sensor_readings.push(0.0);
+            } else {
+                const file_name = files.reduce((max, cur) => {
+                    const cur_number = parseInt(cur.split('_')[1]);
+                    return cur_number > parseInt(max.split('_')[1]) ? cur : max;
+                });
+
+                const file_content_path = join(sensor_dir, file_name);
+                readFile(file_content_path, 'utf8', (err, file_content) => {
+                    if (err) {
+                        console.log('Error reading file:', err);
+                        sensor_readings.push(0.0);
+                    } else {
+                        const data = JSON.parse(file_content);
+                        const processed_data = Math.round(parseFloat(data) * 10) / 10;
+                        sensor_readings.push(processed_data);
+                    }
+                });
             }
-
-            // Find the file with the largest number after 'sensor_data_'
-            const file_name = files.reduce((max, cur) => {
-                const cur_number = parseInt(cur.split('_')[1]);
-                return cur_number > parseInt(max.split('_')[1]) ? cur : max;
-            });
-
-            // Get the contents of the file
-            const file_content = readFileSync(path.join(sensor_dir, file_name), 'utf8');
-
-            // Assume the decoded content is a JSON object that needs processing
-            const data = JSON.parse(file_content);
-
-            // Convert the data to float and round it to the first decimal place
-            const processed_data = Math.round(parseFloat(data) * 10) / 10;
-
-            sensor_readings.push(processed_data);
-        } catch (e) {
-            // If the directory does not exist or there are no files, assign 0.0 to the sensor
-            sensor_readings.push(0.0);
-        }
+        });
     }
 
     res.json(sensor_readings);
 });
 
 app.get('/default/get_mix_tank_distance', function (req, res) {
-    const base_path = './Live-Data-Pathways/Depth_Sensor';
+    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
+    createDirectoryIfNotExist(base_path);
+
     let processed_data;
 
-    try {
-        // Get the list of files in the directory
-        const files = readdirSync(base_path);
+    readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+            processed_data = 0.0;
+        } else {
+            const file_name = files.reduce((max, cur) => {
+                const cur_number = parseInt(cur.split('_')[1]);
+                return cur_number > parseInt(max.split('_')[1]) ? cur : max;
+            });
 
-        if (files.length === 0) {
-            throw new Error('No files in directory');
+            const file_content_path = join(base_path, file_name);
+            readFile(file_content_path, 'utf8', (err, file_content) => {
+                if (err) {
+                    console.log('Error reading file:', err);
+                    processed_data = 0.0;
+                } else {
+                    const data = JSON.parse(file_content);
+                    processed_data = Math.round(parseFloat(data) * 10) / 10;
+                }
+            });
         }
-
-        // Find the file with the largest number after 'sensor_data_'
-        const file_name = files.reduce((max, cur) => {
-            const cur_number = parseInt(cur.split('_')[1]);
-            return cur_number > parseInt(max.split('_')[1]) ? cur : max;
-        });
-
-        // Get the contents of the file
-        const file_content = readFileSync(path.join(base_path, file_name), 'utf8');
-
-        // Assume the decoded content is a JSON object that needs processing
-        const data = JSON.parse(file_content);
-
-        // Convert the data to float and round it to the first decimal place
-        processed_data = Math.round(parseFloat(data) * 10) / 10;
-    } catch (e) {
-        // If the directory does not exist or there are no files, assign 0.0 to the sensor
-        processed_data = 0.0;
-    }
+    });
 
     res.json(processed_data);
 });
 
-// start the server
 app.listen(3000, function () {
   console.log('Local server is running on http://localhost:3000');
 });
