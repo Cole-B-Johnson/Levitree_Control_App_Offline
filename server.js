@@ -16,6 +16,44 @@ function createDirectoryIfNotExist(dir) {
     });
 }
 
+app.get('/default/get_pump_pressure', function (req, res) {
+    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
+
+    createDirectoryIfNotExist(base_path)
+        .then(() => {
+            readdir(base_path, (err, files) => {
+                if (err || files.length === 0) {
+                    console.log('No files in directory:', err);
+                    res.json(0.0);
+                } else {
+                    const fileNames = files.map(fileName => {
+                        return {
+                            name: fileName,
+                            number: parseInt(fileName.split('_').pop())
+                        }
+                    });
+
+                    const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
+                    const latestFilePath = join(base_path, latestFile.name);
+
+                    readFile(latestFilePath, 'utf8', (err, data) => {
+                        if (err) {
+                            console.log('Error reading file:', err);
+                            res.json(0.0);
+                        } else {
+                            res.json(parseFloat(data).toFixed(1));
+                        }
+                    });
+                }
+            });
+        })
+        .catch((err) => {
+            console.log('Error creating directory:', err);
+            return res.status(500).json({ 'message': err.message });
+        });
+});
+
+
 app.get('/default/get_mix_tank_distance', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
 
