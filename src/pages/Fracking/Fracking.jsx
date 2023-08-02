@@ -3,213 +3,7 @@ import './Fracking.css';
 import { useState, useEffect } from 'react';
 import { Container, Card, Row, Col, Form, Dropdown, DropdownButton } from 'react-bootstrap';
 import ThreeStateToggle from '../../components/ThreeStateToggle/ThreeStateToggle';
-import fs from 'fs';
-import path from 'path';
 
-
-// Ensure directory exists
-function ensureDirSync(dirPath) {
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true });
-    }
-}
-
-// get_pump_pressure
-function GetPumpPressure() {
-    const [data, setData] = useState(null);
-    const directoryPath = 'Live-Data-Pathways/Pump_Pressure/';
-    ensureDirSync(directoryPath);
-
-    useEffect(() => {
-        fs.readdir(directoryPath, (err, files) => {
-            if (err) {
-                console.log(err);
-                setData(0.0);
-            } else {
-                if (!files.length) {
-                    setData(0.0);
-                } else {
-                    const latestFile = files.reduce((a, b) => {
-                        return a > b ? a : b;
-                    });
-
-                    fs.readFile(path.join(directoryPath, latestFile), 'utf8', (err, data) => {
-                        if (err) {
-                            console.log(err);
-                            setData(0.0);
-                        } else {
-                            setData(parseFloat(data).toFixed(1));
-                        }
-                    });
-                }
-            }
-        });
-    }, []);
-
-    return (
-        <div>
-            {data}
-        </div>
-    );
-}
-
-// get_mix_tank_distance
-function GetMixTankDistance() {
-    const [data, setData] = useState(null);
-    const directoryPath = 'Live-Data-Pathways/Depth_Sensor/';
-    ensureDirSync(directoryPath);
-
-    useEffect(() => {
-        fs.readdir(directoryPath, (err, files) => {
-            if (err) {
-                console.log(err);
-                setData(0.0);
-            } else {
-                if (!files.length) {
-                    setData(0.0);
-                } else {
-                    const latestFile = files.reduce((a, b) => {
-                        return a > b ? a : b;
-                    });
-
-                    fs.readFile(path.join(directoryPath, latestFile), 'utf8', (err, data) => {
-                        if (err) {
-                            console.log(err);
-                            setData(0.0);
-                        } else {
-                            setData(parseFloat(data).toFixed(1));
-                        }
-                    });
-                }
-            }
-        });
-    }, []);
-
-    return (
-        <div>
-            {data}
-        </div>
-    );
-}
-
-// get_pressure_data
-function GetPressureData() {
-    const [data, setData] = useState([]);
-    const base_path = 'Live-Data-Pathways/Pipe_Pressure_Sensors/CubeCell';
-    ensureDirSync(directoryPath);
-
-    useEffect(() => {
-        for (let sensor_number = 1; sensor_number <= 6; sensor_number++) {
-            const directoryPath = path.join(base_path, sensor_number.toString());
-            
-            fs.readdir(directoryPath, (err, files) => {
-                if (err) {
-                    console.log(err);
-                    setData(oldData => [...oldData, 0.0]);
-                } else {
-                    if (!files.length) {
-                        setData(oldData => [...oldData, 0.0]);
-                    } else {
-                        const latestFile = files.reduce((a, b) => {
-                            return a > b ? a : b;
-                        });
-
-                        fs.readFile(path.join(directoryPath, latestFile), 'utf8', (err, data) => {
-                            if (err) {
-                                console.log(err);
-                                setData(oldData => [...oldData, 0.0]);
-                            } else {
-                                setData(oldData => [...oldData, parseFloat(data).toFixed(1)]);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    }, []);
-
-    return (
-        <div>
-            {data.join(', ')}
-        </div>
-    );
-}
-
-// vfd_output
-function VfdOutput({ pump }) {
-    const [data, setData] = useState([]);
-    const directoryPath = `Live-Data-Pathways/${pump}/From_VFD`;
-    ensureDirSync(directoryPath);
-
-    useEffect(() => {
-        fs.readdir(directoryPath, (err, files) => {
-            if (err) {
-                console.log(err);
-                setData([]);
-            } else {
-                if (!files.length) {
-                    setData([]);
-                } else {
-                    const latestFile = files.reduce((a, b) => {
-                        return a > b ? a : b;
-                    });
-
-                    fs.readFile(path.join(directoryPath, latestFile), 'utf8', (err, data) => {
-                        if (err) {
-                            console.log(err);
-                            setData([]);
-                        } else {
-                            setData(Object.values(JSON.parse(data)));
-                        }
-                    });
-                }
-            }
-        });
-    }, [pump]);
-
-    return (
-        <div>
-            {data.join(', ')}
-        </div>
-    );
-}
-
-// vfd_input
-function VfdInput({ pump, speed, drive_mode }) {
-    const drive_mode_mapping = { "on": "fwd", "off": "rev", "null": "stop" };
-    const directoryPath = `Live-Data-Pathways/${pump}/To_VFD`;
-    ensureDirSync(directoryPath);
-    const filename = `command_${Date.now()}.json`;
-    const filePath = path.join(directoryPath, filename);
-
-    useEffect(() => {
-        let file_contents = {};
-
-        if (speed !== undefined) {
-            file_contents['speed'] = speed;
-        } else if (drive_mode !== undefined) {
-            if (!(drive_mode in drive_mode_mapping)) {
-                console.log(`Invalid drive_mode value: ${drive_mode}`);
-                return;
-            }
-            file_contents['drive_mode'] = drive_mode_mapping[drive_mode];
-        } else {
-            console.log('improper key (not speed or drive_mode)');
-            return;
-        }
-
-        fs.writeFile(filePath, JSON.stringify(file_contents), err => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`Successfully wrote data to ${filePath}`);
-            }
-        });
-    }, [pump, speed, drive_mode]);
-
-    // This function doesn't need to render anything
-    return null;
-}
 
 const Fracking = () => {
     const initialFrackingFormData = {
@@ -228,9 +22,11 @@ const Fracking = () => {
     const [outputPressureData, setOutputPressureData] = useState('');
     const [mixTankFillData, setMixTankFillData] = useState('');
 
-    const fetchOutputPressureData = () => {
+    const fetchOutputPressureData = async () => {
         try {
-            const data = GetPumpPressure();
+            const response = await fetch('https://p48q2t3bzk.execute-api.us-west-2.amazonaws.com/default/get_pump_pressure');
+            if (!response.ok) throw new Error(response.statusText);
+            const data = await response.json();
             setOutputPressureData(data);
         } catch (error) {
             console.error('Failed to fetch output pressure data:', error);
@@ -243,9 +39,11 @@ const Fracking = () => {
         return () => clearInterval(intervalId); // Clean up on unmount
     }, []);
 
-    const fetchMixTankFillData = () => {
+    const fetchMixTankFillData = async () => {
         try {
-            const data = GetMixTankDistance();
+            const response = await fetch('https://b53fqqym12.execute-api.us-west-2.amazonaws.com/default/get_mix_tank_distance');
+            if (!response.ok) throw new Error(response.statusText);
+            const data = await response.json();
             setMixTankFillData(data);
         } catch (error) {
             console.error('Failed to fetch mix tank fill data:', error);
@@ -258,9 +56,11 @@ const Fracking = () => {
         return () => clearInterval(intervalId); // Clean up on unmount
     }, []);    
 
-    const fetchPressureData = () => {
+    const fetchPressureData = async () => {
         try {
-            const data = GetPressureData();
+            const response = await fetch('https://ht3vwz2ms9.execute-api.us-west-2.amazonaws.com/default/get_pressure_data');
+            if (!response.ok) throw new Error(response.statusText);
+            const data = await response.json();
             setPressureData(data);
         } catch (error) {
             console.error('Failed to fetch pressure data:', error);
@@ -276,14 +76,16 @@ const Fracking = () => {
     const [frackingData, setFrackingData] = useState(Array(4).fill('')); 
     const [krackingData, setKrackingData] = useState(Array(4).fill('')); 
 
-    const fetchData = (pumpName, setData) => {
+    const fetchData = async (pumpName, setData) => {
         try {
-            const data = VfdOutput();
+            const response = await fetch(`https://ipeilf2jo5.execute-api.us-west-2.amazonaws.com/default/vfd_output?pump=${pumpName}`);
+            if (!response.ok) throw new Error(response.statusText);
+            const data = await response.json();
             setData(data);
         } catch (error) {
             console.error(`Failed to fetch data for ${pumpName}:`, error);
         }
-    };
+    };    
 
     useEffect(() => {
         fetchData('3_Progressive_Cavity_Pump', setFrackingData); 
@@ -317,12 +119,17 @@ const Fracking = () => {
     const handleSliderChangeEnd = (event, pumpName) => {
         setIsSliderChanging(false);
 
-        try {
-            const data = getVfdInput();
-            console.log(data);
-        } catch (error) {
-            console.error(error);
-        }
+        fetch(`https://iscs7ckm90.execute-api.us-west-2.amazonaws.com/default/vfd_input?pump=${pumpName}&speed=${event.target.value}`)
+            .then(response => {
+                if (!response.ok) throw new Error(response.statusText);
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
     
     const handleFrackingInputChange = (event, pumpName) => {
@@ -341,12 +148,17 @@ const Fracking = () => {
             [pumpName]: value,
         }));
         
-        try {
-            const data = VfdInput();
-            console.log(data);
-        } catch (error) {
-            console.error(error);
-        }
+        fetch(`https://iscs7ckm90.execute-api.us-west-2.amazonaws.com/default/vfd_input?pump=${pumpName}&drive_mode=${value}`)
+            .then(response => {
+                if (!response.ok) throw new Error(response.statusText);
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
     
     const {
