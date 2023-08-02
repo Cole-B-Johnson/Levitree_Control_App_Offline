@@ -80,12 +80,14 @@ const Fracking = () => {
         try {
             const response = await fetch(`http://localhost:3000/default/vfd_output?pump=${pumpName}`);
             if (!response.ok) throw new Error(response.statusText);
-            const data = await response.json();
+            const dataString = await response.text();  // get the response as a string
+            const data = JSON.parse(JSON.parse(dataString));  // parse the string into a JSON object
+            console.log(data)
             setData(data);
         } catch (error) {
             console.error(`Failed to fetch data for ${pumpName}:`, error);
         }
-    };    
+    };
 
     useEffect(() => {
         fetchData('3_Progressive_Cavity_Pump', setFrackingData); 

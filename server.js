@@ -18,7 +18,6 @@ function createDirectoryIfNotExist(dir) {
     });
 }
 
-
 app.get('/default/get_pump_pressure', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
 
@@ -55,7 +54,6 @@ app.get('/default/get_pump_pressure', function (req, res) {
             return res.status(500).json({ 'message': err.message });
         });
 });
-
 
 app.get('/default/get_mix_tank_distance', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
@@ -117,10 +115,16 @@ app.get('/default/vfd_output', function (req, res) {
                             console.log('Error reading file:', err);
                             res.json([]);
                         } else {
-                            const jsonData = JSON.parse(data);
-                            res.json(Object.values(jsonData));
+                            try {
+                                const jsonData = JSON.parse(data);
+                                res.json(jsonData);
+                            } catch (error) {
+                                console.log('Error parsing JSON:', error);
+                                res.json({});
+                            }
                         }
                     });
+                    
                 }
             });
         })
@@ -129,7 +133,6 @@ app.get('/default/vfd_output', function (req, res) {
             return res.status(500).json({ 'message': err.message });
         });
 });
-
 
 app.get('/default/vfd_input', function (req, res) {
     const drive_mode_mapping = {"on": "fwd", "off": "rev", "null": "stop"}; 
@@ -219,7 +222,6 @@ app.get('/default/get_pressure_data', function (req, res) {
             return res.status(500).json({ 'message': err.message });
         });
 });
-
 
 app.get('/default/get_mix_tank_distance', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
