@@ -8,6 +8,17 @@ app.use(cors());
 
 const port = 3001;
   
+function createDirectoryIfNotExist(dir) {
+    return new Promise((resolve, reject) => {
+        mkdir(dir, { recursive: true }, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
 
 app.get('/default/get_pump_pressure', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
