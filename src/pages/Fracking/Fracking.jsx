@@ -24,7 +24,7 @@ const Fracking = () => {
 
     const fetchOutputPressureData = async () => {
         try {
-            const response = await fetch('http://localhost:3000/default/get_pump_pressure');
+            const response = await fetch('http://localhost:3001/default/get_pump_pressure');
             if (!response.ok) throw new Error(response.statusText);
             const data = await response.json();
             setOutputPressureData(data);
@@ -35,13 +35,13 @@ const Fracking = () => {
     
     useEffect(() => {
         fetchOutputPressureData(); // Initial fetch
-        const intervalId = setInterval(fetchOutputPressureData, 3000); // Fetch data every 3 seconds
+        const intervalId = setInterval(fetchOutputPressureData, 3001); // Fetch data every 3 seconds
         return () => clearInterval(intervalId); // Clean up on unmount
     }, []);
 
     const fetchMixTankFillData = async () => {
         try {
-            const response = await fetch('http://localhost:3000/default/get_mix_tank_distance');
+            const response = await fetch('http://localhost:3001/default/get_mix_tank_distance');
             if (!response.ok) throw new Error(response.statusText);
             const data = await response.json();
             setMixTankFillData(data);
@@ -52,13 +52,13 @@ const Fracking = () => {
 
     useEffect(() => {
         fetchMixTankFillData(); // Initial fetch
-        const intervalId = setInterval(fetchMixTankFillData, 3000); // Fetch data every 3 seconds
+        const intervalId = setInterval(fetchMixTankFillData, 3001); // Fetch data every 3 seconds
         return () => clearInterval(intervalId); // Clean up on unmount
     }, []);    
 
     const fetchPressureData = async () => {
         try {
-            const response = await fetch('http://localhost:3000/default/get_pressure_data');
+            const response = await fetch('http://localhost:3001/default/get_pressure_data');
             if (!response.ok) throw new Error(response.statusText);
             const data = await response.json();
             setPressureData(data);
@@ -69,7 +69,7 @@ const Fracking = () => {
 
     useEffect(() => {
         fetchPressureData(); // Initial fetch
-        const intervalId = setInterval(fetchPressureData, 3000); // Fetch data every 3 seconds
+        const intervalId = setInterval(fetchPressureData, 3001); // Fetch data every 3 seconds
         return () => clearInterval(intervalId); // Clean up on unmount
     }, []);
 
@@ -78,7 +78,7 @@ const Fracking = () => {
 
     const fetchData = async (pumpName, setData) => {
         try {
-            const response = await fetch(`http://localhost:3000/default/vfd_output?pump=${pumpName}`);
+            const response = await fetch(`http://localhost:3001/default/vfd_output?pump=${pumpName}`);
             if (!response.ok) throw new Error(response.statusText);
             const dataString = await response.text();  // get the response as a string
             const data = JSON.parse(JSON.parse(dataString));  // parse the string into a JSON object
@@ -96,7 +96,7 @@ const Fracking = () => {
         const intervalId = setInterval(() => {
             fetchData('3_Progressive_Cavity_Pump', setFrackingData);
             fetchData('4_Progressive_Cavity_Pump', setKrackingData); 
-        }, 3000); 
+        }, 3001); 
         return () => clearInterval(intervalId); 
     }, []);
 
@@ -121,7 +121,7 @@ const Fracking = () => {
     const handleSliderChangeEnd = (event, pumpName) => {
         setIsSliderChanging(false);
 
-        fetch(`http://localhost:3000/default/vfd_input?pump=${pumpName}&speed=${event.target.value}`)
+        fetch(`http://localhost:3001/default/vfd_input?pump=${pumpName}&speed=${event.target.value}`)
             .then(response => {
                 if (!response.ok) throw new Error(response.statusText);
                 return response.json();
@@ -150,7 +150,7 @@ const Fracking = () => {
             [pumpName]: value,
         }));
         
-        fetch(`http://localhost:3000/default/vfd_input?pump=${pumpName}&drive_mode=${value}`)
+        fetch(`http://localhost:3001/default/vfd_input?pump=${pumpName}&drive_mode=${value}`)
             .then(response => {
                 if (!response.ok) throw new Error(response.statusText);
                 return response.json();

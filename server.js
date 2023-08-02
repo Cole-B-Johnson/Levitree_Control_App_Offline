@@ -6,10 +6,10 @@ import cors from 'cors'
 const app = express();
 app.use(cors());
 
-const port = 3000;
+const port = 3001;
 
-let server = app.listen(3000, function () {
-    console.log('Local server is running on http://localhost:3000');
+let server = app.listen(3001, function () {
+    console.log('Local server is running on http://localhost:3001');
   });
   
   process.on('SIGINT', function onSigint() {
@@ -272,6 +272,6 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
         });
 });
 
-app.listen(3000, function () {
-  console.log('Local server is running on http://localhost:3000');
+app.listen(3001, function () {
+  console.log('Local server is running on http://localhost:3001');
 });
