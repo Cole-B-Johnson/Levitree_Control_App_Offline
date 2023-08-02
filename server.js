@@ -150,9 +150,11 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
     createDirectoryIfNotExist(base_path);
 
+    let processed_data;
+
     readdir(base_path, (err, files) => {
         if (err || files.length === 0) {
-            return res.json(0.0);
+            processed_data = 0.0;
         } else {
             const file_name = files.reduce((max, cur) => {
                 const cur_number = parseInt(cur.split('_')[1]);
@@ -161,25 +163,19 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
 
             const file_content_path = join(base_path, file_name);
             readFile(file_content_path, 'utf8', (err, file_content) => {
-                let processed_data;
-                if (err || file_content === '') {
+                if (err) {
                     console.log('Error reading file:', err);
                     processed_data = 0.0;
                 } else {
-                    try {
-                        const data = JSON.parse(file_content);
-                        processed_data = Math.round(parseFloat(data) * 10) / 10;
-                    } catch (parseErr) {
-                        console.log('Error parsing JSON:', parseErr);
-                        processed_data = 0.0;
-                    }
+                    const data = JSON.parse(file_content);
+                    processed_data = Math.round(parseFloat(data) * 10) / 10;
                 }
-                res.json(processed_data);
             });
         }
     });
-});
 
+    res.json(processed_data);
+});
 
 app.listen(3000, function () {
   console.log('Local server is running on http://localhost:3000');
