@@ -31,6 +31,25 @@ server.on('error', (err) => {
     }
 });
 
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.log(`Port ${port} is already in use. Trying to kill the process...`);
+        exec(`lsof -t -i:${port} | xargs kill -9`, (err, stdout, stderr) => {
+            if (err) {
+                console.error('Could not kill process:', err);
+            } else {
+                console.log('Process killed successfully. Trying to restart the server...');
+                server.close();
+                app.listen(port, () => {
+                    console.log(`Local server is running on http://localhost:${port}`);
+                });
+            }
+        });
+    } else {
+        console.error(err);
+    }
+});
+
 function createDirectoryIfNotExist(dir) {
     return new Promise((resolve, reject) => {
         mkdir(dir, { recursive: true }, (err) => {
