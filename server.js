@@ -1,7 +1,6 @@
 import express from 'express';
 import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
-import { exec } from 'child_process';
 import cors from 'cors'
 
 const app = express();
@@ -9,59 +8,30 @@ app.use(cors());
 
 const port = 3000;
 
-const server = app.listen(port, () => {
-    console.log(`Local server is running on http://localhost:${port}`);
-});
-
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.log(`Port ${port} is already in use. Trying to kill the process...`);
-        exec(`lsof -t -i:${port} | xargs kill -9`, (err, stdout, stderr) => {
-            if (err) {
-                console.error('Could not kill process:', err);
-            } else {
-                console.log('Process killed successfully. Trying to restart the server...');
-                server.close();
-                app.listen(port, () => {
-                    console.log(`Local server is running on http://localhost:${port}`);
-                });
-            }
-        });
-    } else {
-        console.error(err);
-    }
-});
-
-server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.log(`Port ${port} is already in use. Trying to kill the process...`);
-        exec(`lsof -t -i:${port} | xargs kill -9`, (err, stdout, stderr) => {
-            if (err) {
-                console.error('Could not kill process:', err);
-            } else {
-                console.log('Process killed successfully. Trying to restart the server...');
-                server.close();
-                app.listen(port, () => {
-                    console.log(`Local server is running on http://localhost:${port}`);
-                });
-            }
-        });
-    } else {
-        console.error(err);
-    }
-});
-
-function createDirectoryIfNotExist(dir) {
-    return new Promise((resolve, reject) => {
-        mkdir(dir, { recursive: true }, (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
+let server = app.listen(3000, function () {
+    console.log('Local server is running on http://localhost:3000');
+  });
+  
+  process.on('SIGINT', function onSigint() {
+      console.info('Got SIGINT (aka ctrl-c in docker). Graceful shutdown ', new Date().toISOString());
+      shutdown();
+  });
+  
+  process.on('SIGTERM', function onSigterm() {
+      console.info('Got SIGTERM (docker container stop). Graceful shutdown ', new Date().toISOString());
+      shutdown();
+  });
+  
+  function shutdown() {
+      server.close(function onServerClosed(err) {
+          if (err) {
+              console.error(err);
+              process.exitCode = 1;
+          }
+          process.exit();
+      });
+  }
+  
 
 app.get('/default/get_pump_pressure', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
