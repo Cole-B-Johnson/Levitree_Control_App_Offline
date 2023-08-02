@@ -7,30 +7,6 @@ const app = express();
 app.use(cors());
 
 const port = 3001;
-
-let server = app.listen(3001, function () {
-    console.log('Local server is running on http://localhost:3001');
-  });
-  
-  process.on('SIGINT', function onSigint() {
-      console.info('Got SIGINT (aka ctrl-c in docker). Graceful shutdown ', new Date().toISOString());
-      shutdown();
-  });
-  
-  process.on('SIGTERM', function onSigterm() {
-      console.info('Got SIGTERM (docker container stop). Graceful shutdown ', new Date().toISOString());
-      shutdown();
-  });
-  
-  function shutdown() {
-      server.close(function onServerClosed(err) {
-          if (err) {
-              console.error(err);
-              process.exitCode = 1;
-          }
-          process.exit();
-      });
-  }
   
 
 app.get('/default/get_pump_pressure', function (req, res) {
