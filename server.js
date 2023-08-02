@@ -1,8 +1,10 @@
 import express from 'express';
 import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
+import cors from 'cors'
 
 const app = express();
+app.use(cors());
 
 function createDirectoryIfNotExist(dir) {
     return new Promise((resolve, reject) => {
@@ -15,6 +17,7 @@ function createDirectoryIfNotExist(dir) {
         });
     });
 }
+
 
 app.get('/default/get_pump_pressure', function (req, res) {
     const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
