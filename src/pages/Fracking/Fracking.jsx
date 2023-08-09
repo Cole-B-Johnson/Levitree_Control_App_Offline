@@ -58,7 +58,7 @@ const Fracking = () => {
 
     const fetchPressureData = async () => {
         try {
-            const response = await fetch('http://localhost:3001/default/get_pressure_data');
+            const response = await fetch('https://ht3vwz2ms9.execute-api.us-west-2.amazonaws.com/default/get_pressure_data');
             if (!response.ok) throw new Error(response.statusText);
             const data = await response.json();
             setPressureData(data);
