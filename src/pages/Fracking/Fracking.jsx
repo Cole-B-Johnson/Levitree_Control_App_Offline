@@ -280,6 +280,110 @@ const Fracking = () => {
                     </div>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Additive 1</Form.Label>
+                    <div className='form_flex_container'>
+                        <ThreeStateToggle
+                            name="krackingVFDOnOffToggle"
+                            pumpName='4_Progressive_Cavity_Pump'
+                            value={krackingVFDOnOffToggle}
+                            onChange={handleFrackingInputChange}
+                        />
+                        <div className='form_range_container'>
+                            <Form.Range
+                                className=''
+                                name="krackingVFDRange"
+                                value={krackingVFDRange}
+                                onChange={handleSliderChange}
+                                onMouseDown={handleSliderChangeStart}
+                                onMouseUp={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onTouchStart={handleSliderChangeStart}
+                                onTouchEnd={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                min={0}
+                                max={90}
+                            />
+                            <span>{krackingVFDRange}Hz</span>
+                            <div className='output_box_container'>
+                                <div>
+                                    <p>Current Mode</p>
+                                    <div className='output_box'>{frackingData[4]}</div>
+                                </div>
+                                <div>
+                                    <p>Output frequency</p>
+                                    <div className='output_box'>{krackingData[0]}</div>
+                                </div>
+                                <div>
+                                    <p>Input power</p>
+                                    <div className='output_box'>{krackingData[1]}</div>
+                                </div>
+                                <div>
+                                    <p>Output current</p>
+                                    <div className='output_box'>{krackingData[2]}</div>
+                                </div>
+                                <div>
+                                    <p>Output voltage</p>
+                                    <div className='output_box'>{krackingData[3]}</div>
+                                </div>
+                                <div>
+                                    <p>Pressure</p>
+                                    <div className='output_box'>{outputPressureData}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Additive 2</Form.Label>
+                    <div className='form_flex_container'>
+                        <ThreeStateToggle
+                            name="krackingVFDOnOffToggle"
+                            pumpName='4_Progressive_Cavity_Pump'
+                            value={krackingVFDOnOffToggle}
+                            onChange={handleFrackingInputChange}
+                        />
+                        <div className='form_range_container'>
+                            <Form.Range
+                                className=''
+                                name="krackingVFDRange"
+                                value={krackingVFDRange}
+                                onChange={handleSliderChange}
+                                onMouseDown={handleSliderChangeStart}
+                                onMouseUp={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onTouchStart={handleSliderChangeStart}
+                                onTouchEnd={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                min={0}
+                                max={90}
+                            />
+                            <span>{krackingVFDRange}Hz</span>
+                            <div className='output_box_container'>
+                                <div>
+                                    <p>Current Mode</p>
+                                    <div className='output_box'>{frackingData[4]}</div>
+                                </div>
+                                <div>
+                                    <p>Output frequency</p>
+                                    <div className='output_box'>{krackingData[0]}</div>
+                                </div>
+                                <div>
+                                    <p>Input power</p>
+                                    <div className='output_box'>{krackingData[1]}</div>
+                                </div>
+                                <div>
+                                    <p>Output current</p>
+                                    <div className='output_box'>{krackingData[2]}</div>
+                                </div>
+                                <div>
+                                    <p>Output voltage</p>
+                                    <div className='output_box'>{krackingData[3]}</div>
+                                </div>
+                                <div>
+                                    <p>Pressure</p>
+                                    <div className='output_box'>{outputPressureData}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
                 <Form.Label column sm="2" style={{fontSize: "24px"}}>Pressure Sensors</Form.Label>
                 <div className='output_box_container'>
                     {pressureData.map((pressure, index) => (
