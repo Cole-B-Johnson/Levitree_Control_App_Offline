@@ -167,7 +167,11 @@ const Fracking = () => {
         frackingVFDOnOffToggle,
         frackingVFDRange,
         krackingVFDOnOffToggle,
+        pulperVFDOnOffToggle,
+        augerVFDOnOffToggle,
         krackingVFDRange,
+        pulperVFDRange,
+        augerVFDRange,
         rateOfMaterialMovement,
         mixTankFillLevel,
         ampDrawOnMixTankAgitator,
@@ -280,28 +284,28 @@ const Fracking = () => {
                     </div>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Additive 1</Form.Label>
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Pulper</Form.Label>
                     <div className='form_flex_container'>
                         <ThreeStateToggle
-                            name="krackingVFDOnOffToggle"
-                            pumpName='4_Progressive_Cavity_Pump'
-                            value={krackingVFDOnOffToggle}
+                            name="pulperVFDOnOffToggle"
+                            pumpName='Hydrapulper'
+                            value={pulperVFDOnOffToggle}
                             onChange={handleFrackingInputChange}
                         />
                         <div className='form_range_container'>
                             <Form.Range
                                 className=''
-                                name="krackingVFDRange"
-                                value={krackingVFDRange}
+                                name="pulperVFDRange"
+                                value={pulperVFDRange}
                                 onChange={handleSliderChange}
                                 onMouseDown={handleSliderChangeStart}
-                                onMouseUp={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onMouseUp={(e) => handleSliderChangeEnd(e, 'Hydrapulper')}
                                 onTouchStart={handleSliderChangeStart}
-                                onTouchEnd={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onTouchEnd={(e) => handleSliderChangeEnd(e, 'Hydrapulper')}
                                 min={0}
                                 max={90}
                             />
-                            <span>{krackingVFDRange}Hz</span>
+                            <span>{pulperVFDRange}Hz</span>
                             <div className='output_box_container'>
                                 <div>
                                     <p>Current Mode</p>
@@ -332,28 +336,28 @@ const Fracking = () => {
                     </div>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Additive 2</Form.Label>
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Auger Truck</Form.Label>
                     <div className='form_flex_container'>
                         <ThreeStateToggle
-                            name="krackingVFDOnOffToggle"
-                            pumpName='4_Progressive_Cavity_Pump'
-                            value={krackingVFDOnOffToggle}
+                            name="augerVFDOnOffToggle"
+                            pumpName='Auger_Truck'
+                            value={augerVFDOnOffToggle}
                             onChange={handleFrackingInputChange}
                         />
                         <div className='form_range_container'>
                             <Form.Range
                                 className=''
-                                name="krackingVFDRange"
-                                value={krackingVFDRange}
+                                name="augerVFDRange"
+                                value={augerVFDRange}
                                 onChange={handleSliderChange}
                                 onMouseDown={handleSliderChangeStart}
-                                onMouseUp={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onMouseUp={(e) => handleSliderChangeEnd(e, 'Auger_Truck')}
                                 onTouchStart={handleSliderChangeStart}
-                                onTouchEnd={(e) => handleSliderChangeEnd(e, '4_Progressive_Cavity_Pump')}
+                                onTouchEnd={(e) => handleSliderChangeEnd(e, 'Auger_Truck')}
                                 min={0}
                                 max={90}
                             />
-                            <span>{krackingVFDRange}Hz</span>
+                            <span>{augerVFDRange}Hz</span>
                             <div className='output_box_container'>
                                 <div>
                                     <p>Current Mode</p>
