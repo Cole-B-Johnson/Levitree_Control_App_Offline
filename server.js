@@ -100,7 +100,7 @@ app.get('/default/vfd_output', function (req, res) {
             readdir(base_path, (err, files) => {
                 if (err || files.length === 0) {
                     console.log('No files in directory:', err);
-                    res.json([]);
+                    res.json([0,0,0,0,0]);
                 } else {
                     const fileNames = files.map(fileName => {
                         return {
@@ -120,6 +120,7 @@ app.get('/default/vfd_output', function (req, res) {
                             try {
                                 const jsonData = JSON.parse(data);
                                 res.json(jsonData);
+                                console.log(jsonData);
                             } catch (error) {
                                 console.log('Error parsing JSON:', error);
                                 res.json({});
