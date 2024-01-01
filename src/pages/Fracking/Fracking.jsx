@@ -230,8 +230,6 @@ const Fracking = () => {
             });
     };
     
-    
-    
     const {
         frackingVFDOnOffToggle,
         frackingVFDRange,
@@ -275,8 +273,8 @@ const Fracking = () => {
                             <div className='output_box_container'>
                                 <div>
                                     <p>Current Level</p>
-                                    <div className='output_box'>{mixTankFillData}</div>
-                                </div>
+                                    <div className='output_box'>{mixTankFillLevel * Math.sin(45 * Math.PI / 180)}</div>
+                                </div> {/* equation for d * sin(theta), where d is ultrasonic sensor distance and theta is distance from horizontal*/}
                             </div>
                         </div>
                     </div>
