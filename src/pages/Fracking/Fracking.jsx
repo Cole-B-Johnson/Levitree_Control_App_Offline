@@ -267,13 +267,13 @@ const Fracking = () => {
                                 onTouchStart={handleSliderChangeStart}
                                 onTouchEnd={(e) => handleSliderChangeEnd(e, 'autopilot')}
                                 min={0}
-                                max={90}
+                                max={60}
                             />
                             <span>{autopilotFillRange}" From Top</span>
                             <div className='output_box_container'>
                                 <div>
                                     <p>Current Level</p>
-                                    <div className='output_box'>{mixTankFillLevel * Math.sin(45 * Math.PI / 180)}</div>
+                                    <div className='output_box'>{mixTankFillLevel * Math.sin(45 * Math.PI / 180) * .0394}</div>
                                 </div> {/* equation for d * sin(theta), where d is ultrasonic sensor distance and theta is distance from horizontal*/}
                             </div>
                         </div>
