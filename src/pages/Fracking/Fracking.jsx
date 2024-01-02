@@ -105,6 +105,15 @@ const Fracking = () => {
             if (data['current_mode'] == 2050) {
                 data['current_mode'] = 'Reverse';
             }
+            if (data['current_mode'] == 4) {
+                data['current_mode'] = 'Off';
+            }
+            if (data['current_mode'] == 1) {
+                data['current_mode'] = 'Forward';
+            }
+            if (data['current_mode'] == 2) {
+                data['current_mode'] = 'Reverse';
+            }
 
             data['output_frequency'] = `${data['output_frequency'] / 100}Hz`;
 
