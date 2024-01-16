@@ -151,6 +151,99 @@ app.get("/default/vfd_output", function (req, res) {
     });
 });
 
+app.get("/default/autopilot_set", function (req, res) {
+  const drive_mode_mapping = { on: "fwd", off: "rev", null: "stop" };
+
+  const base_path = `${program.opts().dir}/autopilot/To_VFD`;
+
+  const filename = `command_${Math.floor(Date.now() / 1000)}.json`;
+  const file_path = join(base_path, filename);
+
+  let file_contents;
+
+  if (req.query.distance !== undefined) {
+    file_contents = { speed: req.query.distance };
+  } else if (req.query.state !== undefined) {
+    if (req.query.state !== "off" && req.query.state !== "on") {
+      return res
+        .status(500)
+        .json({ message: `Invalid state value: ${req.query.state}` });
+    }
+    file_contents = { drive_mode: drive_mode_mapping[req.query.state] };
+  } else if (req.query.wood_chips !== undefined) {
+    file_contents = { wood_chips: req.query.wood_chips };
+  } else if (req.query.flow_rate !== undefined) {
+    file_contents = { flow_rate: req.query.flow_rate };
+  } else if (req.query.paper_pulp !== undefined) {
+    file_contents = { paper_pulp: req.query.paper_pulp };
+  } else {
+    return res
+      .status(500)
+      .json({ message: "Improper key (not distance, state, flow_rate, wood_chips, or paper_pulp)" });
+  }
+
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      writeFile(file_path, JSON.stringify(file_contents), (err) => {
+        if (err) {
+          console.log("Error writing file:", err);
+          return res.status(500).json({ message: err.message });
+        }
+        res.json({ message: `Successfully wrote data to ${file_path}` });
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
+});
+
+app.get("/default/autopilot_get", function (req, res) {
+  const base_path = `${program.opts().dir}/autopilot/From_VFD`;
+
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+          console.log("No files in directory:", err);
+          res.json([0, 0, 0, 0, 0]);
+        } else {
+          const fileNames = files.map((fileName) => {
+            return {
+              name: fileName,
+              number: parseInt(fileName.split("_").pop()),
+            };
+          });
+
+          const latestFile = fileNames.reduce((a, b) =>
+            a.number > b.number ? a : b,
+          );
+          const latestFilePath = join(base_path, latestFile.name);
+
+          readFile(latestFilePath, "utf8", (err, data) => {
+            if (err) {
+              console.log("Error reading file:", err);
+              res.json([]);
+            } else {
+              try {
+                const jsonData = JSON.parse(data);
+                res.json(jsonData);
+                console.log(jsonData);
+              } catch (error) {
+                console.log("Error parsing JSON:", error);
+                res.json({});
+              }
+            }
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
+});
+
 app.get("/default/vfd_input", function (req, res) {
   const drive_mode_mapping = { on: "fwd", off: "rev", null: "stop" };
 
