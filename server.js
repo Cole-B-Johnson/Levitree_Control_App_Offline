@@ -1,13 +1,18 @@
 import express from 'express';
 import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
-import cors from 'cors'
+import cors from 'cors';
+import { program, Option } from 'commander';
+
+program
+    .addOption(new Option('-p, --port <number>', 'port for backend webserver').env('PORT').preset(3001))
+    .addOption(new Option('-d, --dir [directory]', 'root storage directory').preset('/home/levitree/Desktop/Live-Data-Pathways'))
+
+program.parse();
 
 const app = express();
 app.use(cors());
 
-const port = 3001;
-  
 function createDirectoryIfNotExist(dir) {
     return new Promise((resolve, reject) => {
         mkdir(dir, { recursive: true }, (err) => {
@@ -21,7 +26,7 @@ function createDirectoryIfNotExist(dir) {
 }
 
 app.get('/default/get_pump_pressure', function (req, res) {
-    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pump_Pressure/';
+    const base_path = `${program.opts().dir}/Pump_Pressure/`;
 
     createDirectoryIfNotExist(base_path)
         .then(() => {
@@ -58,7 +63,7 @@ app.get('/default/get_pump_pressure', function (req, res) {
 });
 
 app.get('/default/get_mix_tank_distance', function (req, res) {
-    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
+    const base_path = `${program.opts().dir}/Depth_Sensor`;
 
     createDirectoryIfNotExist(base_path)
         .then(() => {
@@ -93,14 +98,14 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
 
 app.get('/default/vfd_output', function (req, res) {
     const pump = req.query.pump;
-    const base_path = `/home/levitree/Desktop/Live-Data-Pathways/${pump}/From_VFD`;
+    const base_path = `${program.opts().dir}/${pump}/From_VFD`;
 
     createDirectoryIfNotExist(base_path)
         .then(() => {
             readdir(base_path, (err, files) => {
                 if (err || files.length === 0) {
                     console.log('No files in directory:', err);
-                    res.json([0,0,0,0,0]);
+                    res.json([0, 0, 0, 0, 0]);
                 } else {
                     const fileNames = files.map(fileName => {
                         return {
@@ -127,7 +132,7 @@ app.get('/default/vfd_output', function (req, res) {
                             }
                         }
                     });
-                    
+
                 }
             });
         })
@@ -138,10 +143,10 @@ app.get('/default/vfd_output', function (req, res) {
 });
 
 app.get('/default/vfd_input', function (req, res) {
-    const drive_mode_mapping = {"on": "fwd", "off": "rev", "null": "stop"}; 
+    const drive_mode_mapping = { "on": "fwd", "off": "rev", "null": "stop" };
 
     const pump = req.query.pump;
-    const base_path = `/home/levitree/Desktop/Live-Data-Pathways/${pump}/To_VFD`;
+    const base_path = `${program.opts().dir}/${pump}/To_VFD`;
 
     const filename = `command_${Math.floor(Date.now() / 1000)}.json`;
     const file_path = join(base_path, filename);
@@ -155,7 +160,7 @@ app.get('/default/vfd_input', function (req, res) {
         if (!drive_mode_mapping[drive_mode_value]) {
             return res.status(500).json({ 'message': `Invalid drive_mode value: ${drive_mode_value}` });
         }
-        file_contents = { 'drive_mode': drive_mode_mapping[drive_mode_value] }; 
+        file_contents = { 'drive_mode': drive_mode_mapping[drive_mode_value] };
     } else {
         return res.status(500).json({ 'message': 'Improper key (not speed or drive_mode)' });
     }
@@ -175,7 +180,7 @@ app.get('/default/vfd_input', function (req, res) {
 });
 
 app.get('/default/get_pressure_data', function (req, res) {
-    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Pipe_Pressure_Sensors/CubeCell';
+    const base_path = `${program.opts().dir}/Pipe_Pressure_Sensors/CubeCell`;
 
     createDirectoryIfNotExist(base_path)
         .then(() => {
@@ -227,7 +232,7 @@ app.get('/default/get_pressure_data', function (req, res) {
 });
 
 app.get('/default/get_mix_tank_distance', function (req, res) {
-    const base_path = '/home/levitree/Desktop/Live-Data-Pathways/Depth_Sensor';
+    const base_path = `${program.opts().dir}/Depth_Sensor`;
 
     createDirectoryIfNotExist(base_path)
         .then(() => {
@@ -260,6 +265,7 @@ app.get('/default/get_mix_tank_distance', function (req, res) {
         });
 });
 
-app.listen(3001, function () {
-  console.log('Local server is running on http://localhost:3001');
+app.listen(program.opts().port, function () {
+    console.log(`Local server is running on http://localhost:${program.opts().port}`);
+    console.log(`Using app storage directory: ${program.opts().dir}`);
 });
