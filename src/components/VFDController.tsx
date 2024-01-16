@@ -118,15 +118,15 @@ const VFDController = (props: VFDControllerProps) => {
     return (
         <>
             <div className="grid grid-cols-6 gap-2">
-                <div className="col-span-6 mt-2 flex flex-col justify-start gap-10 lg:col-span-2">
-                    <h1 className="font-sans text-3xl font-light">{props.name}</h1>
+                <div className="col-span-6 mt-2 flex flex-col justify-start gap-5 lg:col-span-2">
+                    <h1 className="font-sans text-2xl font-light">{props.name}</h1>
                     <VFDDriveModeToggle
                         value={driveMode}
                         onChange={updateDriveMode}
                     ></VFDDriveModeToggle>
                 </div>
-                <div className="col-span-6 mr-4 mt-0 flex flex-col gap-1 p-4 pb-0 pt-0 lg:col-span-4">
-                    <div className="flex h-min items-center justify-start gap-4 p-4">
+                <div className="col-span-6 mr-4 mt-0 flex flex-col gap-0 p-4 pb-0 pt-0 lg:col-span-4">
+                    <div className="flex h-min items-center justify-start gap-4 p-4 pb-0">
                         <input
                             type="range"
                             value={outputFreq}
@@ -139,7 +139,7 @@ const VFDController = (props: VFDControllerProps) => {
                         />
                         <div className="w-6 text-lg font-bold">{outputFreq}Hz</div>
                     </div>
-                    <div className="flex h-min justify-start items-end gap-4 p-4 pr-0">
+                    <div className="flex h-min justify-start items-end gap-4 p-4 pr-0 mt-[-10px]">
                         <div className="flex w-44 flex-col items-center gap-2">
                             <h6 className="w-full text-center font-semibold">Current Mode</h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">

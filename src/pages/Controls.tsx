@@ -68,7 +68,7 @@ const Controls = () => {
   return (
     <>
       <section>
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-1">
           <VFDController
             name={`8" Pump`}
             pumpID="3_Progressive_Cavity_Pump"

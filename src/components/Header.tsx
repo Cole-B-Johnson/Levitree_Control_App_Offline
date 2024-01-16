@@ -4,11 +4,11 @@ const Header = () => {
   return (
     <>
       <div className="flex w-full justify-center my-4">
-        <div className="flex justify-evenly w-full max-w-lg">
+        <div className="flex justify-evenly w-full max-w-lg gap-4">
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
-              ` p-2 rounded-s-lg flex-grow text-center text-lg font-light border border-blue-600 ${isActive ? "text-white bg-blue-600" : "text-blue-600 hover:bg-gray-100"}`
+              ` p-2 rounded-lg flex-grow text-center text-lg font-light border ${isActive ? "text-white bg-gray-500" : "text-gray-500 hover:bg-gray-50"}`
             }
           >
             Dashboard
@@ -16,7 +16,7 @@ const Header = () => {
           <NavLink
             to="/autopilot"
             className={({ isActive }) =>
-              ` p-2 flex-grow text-center text-lg font-light border border-blue-600 ${isActive ? "text-white bg-blue-600" : "text-blue-600 hover:bg-gray-100"}`
+              ` p-2 rounded-lg flex-grow text-center text-lg font-light border ${isActive ? "text-white bg-gray-500" : "text-gray-500 hover:bg-gray-50"}`
             }
           >
             Autopilot
@@ -24,7 +24,7 @@ const Header = () => {
           <NavLink
             to="/controls"
             className={({ isActive }) =>
-              ` p-2 rounded-e-lg flex-grow text-center text-lg font-light border border-blue-600 ${isActive ? "text-white bg-blue-600" : "text-blue-600 hover:bg-gray-100"}`
+              ` p-2 rounded-lg flex-grow text-center text-lg font-light border ${isActive ? "text-white bg-gray-500" : "text-gray-500 hover:bg-gray-50"}`
             }
           >
             Controls

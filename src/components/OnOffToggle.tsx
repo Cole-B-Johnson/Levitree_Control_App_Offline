@@ -22,17 +22,16 @@ const OnOffToggle = (props: OnOffToggleProps) => {
   };
 
   return (
-    <div className="w-100 inline-flex flex-grow rounded-md" role="group">
+    <div className="inline-flex rounded-md w-96" role="group">
       <button
         type="button"
         onClick={() => {
           handleChange("on");
         }}
-        className={`h-14 flex-grow py-2 text-lg font-light ${
-          value === "on"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-blue-600 hover:bg-gray-100"
-        } rounded-s-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
+        className={`h-14 flex-grow py-2 text-lg font-light ${value === "on"
+          ? "bg-blue-600 text-white"
+          : "bg-white text-blue-600 hover:bg-gray-100"
+          } rounded-s-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
       >
         On
       </button>
@@ -41,11 +40,10 @@ const OnOffToggle = (props: OnOffToggleProps) => {
         onClick={() => {
           handleChange("off");
         }}
-        className={`h-14 flex-grow py-2 text-lg font-light ${
-          value === "off"
-            ? "bg-blue-600 text-white"
-            : "bg-white text-blue-600 hover:bg-gray-100"
-        } rounded-e-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
+        className={`h-14 flex-grow py-2 text-lg font-light ${value === "off"
+          ? "bg-blue-600 text-white"
+          : "bg-white text-blue-600 hover:bg-gray-100"
+          } rounded-e-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
       >
         Off
       </button>
