@@ -1,119 +1,153 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Peripherals/Peripherals.css';
 import './ChipInjectionSystem.css';
-import { useState } from 'react';
-import { Card, Row, Col, Form } from 'react-bootstrap';
-import ThreeStateToggle from '../../components/ThreeStateToggle/ThreeStateToggle';
-import TwoStateToggle2 from '../../components/TwoStateToggle2/TwoStateToggle2';
+import { Card, Col, Row, Form } from 'react-bootstrap';
+import TwoStateToggle from '../../components/TwoStateToggle/TwoStateToggle';
 
 const ChipInjectionSystem = () => {
-
     const initialChipInjectionFormData = {
-        truckAugerVFDOnOffToggle: "",
-        truckAugerVFDRange: "25",
-        VFDderivedVolumetricReading: "",
-        availableWater: "",
-        binaryDirection:"on"
+        autopilotOnOffToggle: "",
+        autopilotFillRange: "0",
+        mixTankFillLevel: "0",
+        outletRate: "0",
+        ratioOne: "0",
+        ratioTwo: "0",
     };
 
     const [chipInjectionFormData, setChipInjectionFormData] = useState(initialChipInjectionFormData);
-    const [rangeValue, setRangeValue] = useState(50); // Initial range value
-    const [selectedHoles, setSelectedHoles] = useState(0); // Dynamically add inputs based on number of holes in the form
 
-    const handleChipInjectionInputChange = (event) => {
-        event.preventDefault();
-        const { name, value, type, checked } = event.target;
-        // Updating the form data based on input type
-        const updatedValue = type === "checkbox" ? checked : value;
+    const handleGeneralInputChange = (event) => {
+        const { name, value } = event.target;
         setChipInjectionFormData(prevFormData => ({
             ...prevFormData,
-            [name]: updatedValue,
+            [name]: value,
         }));
     };
+
+    const handleSliderChange = (event) => {
+        // Implement slider change logic here
+    };
+
+    // Add data fetching logic similar to the Fracking component
+    // For example, fetching mixTankFillLevel
+
+    useEffect(() => {
+        // Data fetching logic here
+    }, []);
+
     const {
-        truckAugerVFDOnOffToggle,
-        truckAugerVFDRange,
-        VFDderivedVolumetricReading,
-        availableWater,
-        binaryDirection,
+        autopilotOnOffToggle,
+        autopilotFillRange,
+        mixTankFillLevel,
+        outletRate,
+        ratioOne,
+        ratioTwo,
     } = chipInjectionFormData;
 
     return (
         <Card className="card_container">
             <Form className="elevation" id="chipInjectionSystemSection">
+                {/* On/Off Toggle Button */}
+                <div className="toggle_container">
+                    <TwoStateToggle
+                        name="autopilotOnOffToggle"
+                        value={autopilotOnOffToggle}
+                        onChange={handleGeneralInputChange}
+                    />
+                </div>
+
                 <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Truck Auger</Form.Label>
-                    <div className='form_flex_container'>
-                        <ThreeStateToggle
-                            name="truckAugerVFDOnOffToggle"
-                            value={truckAugerVFDOnOffToggle}
-                            onChange={(e) => handleChipInjectionInputChange(e)}
-                        />
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Controls</Form.Label>
+                    <div className='form_flex_container slurry_composition_container'>
+
                         <div className='form_range_container'>
-                            <Form.Range
-                                className=''
-                                name="truckAugerVFDRange"
-                                value={truckAugerVFDRange}
-                                onChange={(e) => handleChipInjectionInputChange(e)}
-                                min={25}
-                                max={95}
-                            />
-                            <span>{truckAugerVFDRange}Hz</span>
-                            <div className='output_box_container'>
-                            <div>
-                                <p>Output frequency</p>
-                                <div className='output_box'></div>
-                            </div>
-                            <div>
-                                <p>Input power</p>
-                                <div className='output_box'></div>
-                            </div>
-                            <div>
-                                <p>Output current</p>
-                                <div className='output_box'></div>
-                            </div>
-                            <div>
-                                <p>Output voltage</p>
-                                <div className='output_box'></div>
+                            <div className="slider-container">
+                                <Form.Range
+                                    name="autopilotFillRange"
+                                    value={autopilotFillRange}
+                                    onChange={handleSliderChange}
+                                    min={0}
+                                    max={60}
+                                />
+                                <span> {autopilotFillRange}" Distance From Top of Tank</span>
                             </div>
                         </div>
+
+                        <div className='form_range_container'>
+                            <div className="slider-container">
+                                <Form.Range
+                                    name="autopilotFillRange"
+                                    value={autopilotFillRange}
+                                    onChange={handleSliderChange}
+                                    min={0}
+                                    max={60}
+                                />
+                                <span> {outletRate} m^3/hr Flow Rate</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='output_box_container'>
+                        <div>
+                            <p>Distance From Top</p>
+                            <div className='output_box'>{mixTankFillLevel}"</div>
+                        </div>
+                        <div>
+                            <p>Discharge Rate</p>
+                            <div className='output_box'>{outletRate} m^3/hr</div>
                         </div>
                     </div>
                 </Form.Group>
-                <Form.Label column sm="2" style={{fontSize: "24px"}}>Sensors</Form.Label>
-                <div className='form_flex_container'>
-                    <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                        <Form.Label column sm="2">Chip Truck Fill</Form.Label>
-                        <div className='form_flex_container'>
-                        <TwoStateToggle2 
-                            name="binaryDirection"
-                            onChange={(e) => handleChipInjectionInputChange(e)}
-                            disabled={true}
-                        />
+
+                {/* Composition Modification */}
+                <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Slurry Composition</Form.Label>
+                    <div className='form_flex_container slurry_composition_container'>
+                        <div className='form_range_container'>
+                            <p>Wood Chips</p>
+                            <div className="slider-container">
+                                <Form.Range
+                                    name="ratioOne"
+                                    value={ratioOne}
+                                    onChange={handleSliderChange}
+                                    min={0}
+                                    max={100}
+                                />
+                                <span>{ratioOne}% by Volume</span>
+                            </div>
+                        </div>
+                        <div className='form_range_container'>
+                            <p>Paper Pulp</p>
+                            <div className="slider-container">
+                                <Form.Range
+                                    name="ratioTwo"
+                                    value={ratioTwo}
+                                    onChange={handleSliderChange}
+                                    min={0}
+                                    max={100}
+                                />
+                                <span>{ratioTwo}% by Volume</span>
+                            </div>
+                        </div>
                     </div>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                        <Form.Label column sm="2">Volumetric Flow</Form.Label>
-                        <div className='output_box_container'>
-                            <div>
-                                <div className='output_box'>
-                                    {VFDderivedVolumetricReading}
-                                </div>
-                            </div>
+                    <div className='output_box_container'>
+                        <div>
+                            <p>Wood Chips</p>
+                            <div className='output_box'>{mixTankFillLevel}%</div>
                         </div>
-                    </Form.Group>
-                    <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                        <Form.Label column sm="2">Water Flow</Form.Label>
-                        <div className='output_box_container'>
-                            <div>
-                                <div className='output_box'>{availableWater}</div>
-                            </div>
+                        <div>
+                            <p>Paper Pulp</p>
+                            <div className='output_box'>{mixTankFillLevel}%</div>
                         </div>
-                    </Form.Group>
-                </div>
+                        <div>
+                            <p>Water</p>
+                            <div className='output_box'>{mixTankFillLevel}%</div>
+                        </div>
+                    </div>
+                </Form.Group>
             </Form>
         </Card>
-    )
-}
+    );
+};
 
-export default ChipInjectionSystem
+export default ChipInjectionSystem;

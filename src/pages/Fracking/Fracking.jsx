@@ -257,8 +257,8 @@ const Fracking = () => {
     return (
         <Card className="card_container">
             <Form className="elevation" id="frackingSection">
-            <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
-                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Auto Pilot</Form.Label>
+                <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
+                    <Form.Label column sm="2" style={{fontSize: "24px"}}>Auto Pilot (use here before migration to other page)</Form.Label>
                     <div className='form_flex_container'>
                         <TwoStateToggle
                             name="autopilotOnOffToggle"
@@ -281,7 +281,7 @@ const Fracking = () => {
                             <span>{autopilotFillRange}" From Top</span>
                             <div className='output_box_container'>
                                 <div>
-                                    <p>Current Level</p>
+                                    <p>Mix Tank Fill Level</p>
                                     <div className='output_box'>{mixTankFillLevel * Math.sin(53 * Math.PI / 180) * .0394}</div>
                                 </div> {/* equation for d * sin(theta), where d is ultrasonic sensor distance and theta is distance from horizontal*/}
                             </div>
@@ -389,10 +389,6 @@ const Fracking = () => {
                                     <p>Output voltage</p>
                                     <div className='output_box'>{krackingData['output_voltage']}</div>
                                 </div>
-                                <div>
-                                    <p>Mix Tank Fill Level</p>
-                                    <div className='output_box'>{mixTankFillData}</div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -495,7 +491,7 @@ const Fracking = () => {
                     </div>
                 </Form.Group>
 
-                <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
+                {/* <Form.Group as={Row} className="mb-3 form_group_container" controlId="formPlaintextEmail">
                 <Form.Label column sm="2" style={{fontSize: "24px"}}>Pressure Sensors</Form.Label>
                 <div className='output_box_container'>
                     {pressureData.map((pressure, index) => (
@@ -503,8 +499,8 @@ const Fracking = () => {
                             <div className='output_box'>{pressure}</div>
                         </div>
                     ))}
-                </div>
-            </Form.Group>
+                </div> */}
+            {/* </Form.Group> */}
             </Form>
         </Card>
     )

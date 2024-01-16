@@ -1,6 +1,96 @@
+/* Parent container for Mix Tank Fill Level and Outlet Discharge Rate */
+.form_group_pair_container {
+    display: flex;
+    justify-content: center; /* Center children horizontally */
+    align-items: flex-start; /* Align children to the start vertically */
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    margin-bottom: 15px; /* Spacing below the container */
+}
+
+/* Child containers for Mix Tank Fill Level and Outlet Discharge Rate */
+.form_group_pair_container > .form_group_container {
+    flex-basis: 50%; /* Each child takes up 50% of the parent width */
+    padding: 0 15px; /* Spacing inside each child container */
+}
+
+/* Style for the custom form group container */
+.custom_form_group_container {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    height: 100%;            /* Take full height of the parent */
+}
+
+/* Style for the custom form flex container */
+.custom_form_flex_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.toggle_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px; /* Adjust spacing as needed */
+}
+
+.output_box_container {
+    display: flex;
+    justify-content: center; /* Center children horizontally */
+    align-items: center; /* Align children vertically */
+    flex-wrap: wrap; /* Allow the items to wrap as needed */
+}
+
+.output_box_container > div {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    margin: 0 10px; /* Horizontal spacing between boxes */
+    margin-bottom: 15px; /* Vertical spacing below each box */
+}
+
+.output_box_container > div > p {
+    text-align: center;
+    margin-bottom: 5px; /* Space between title and box */
+}
+
 .output_box {
     border: none !important;
     outline: none !important;
     background-color: #e2dfdf !important; /* light grey */
     box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.2); /* shadow */
+    /* Add padding and dimensions as required */
 }
+
+.slurry_composition_container .form_range_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-basis: 45%; /* Adjust as needed */
+    margin: 10px auto;
+}
+
+.slurry_composition_container .form_range_container p {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
+.slurry_composition_container .slider-container {
+    display: flex;
+    flex-direction: column; /* Stack slider and label vertically */
+    align-items: center; /* Center slider and label */
+    width: 100%; /* Full width of parent container */
+}
+
+.slurry_composition_container .slider-container > Form.Range {
+    width: 100%; /* Slider takes full width */
+}
+
+.slurry_composition_container .slider-container span {
+    margin-top: 5px; /* Space above label */
+    text-align: center; /* Center align the label text */
+}
+
