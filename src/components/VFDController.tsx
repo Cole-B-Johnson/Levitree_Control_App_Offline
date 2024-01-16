@@ -29,34 +29,41 @@ const VFDController = (props: VFDControllerProps) => {
         setOutputFreq(newFreq);
     };
 
-    const updateFrequency = () => {
-        fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&speed=${outputFreq}`)
-            .then(() => {
-                toast.success(`Speed changed for ${props.name}`)
-            })
-            .catch(() => {
-                toast.error(`Couldn't set speed for ${props.name}`)
-            });
+    const updateFrequency = async () => {
+        try {
+            let resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&speed=${outputFreq}`)
+            if (!resp.ok) {
+                throw null;
+            }
+            toast.success(`Speed changed for ${props.name}`)
+        } catch {
+            toast.error(`Couldn't set speed for ${props.name}`)
+        }
     };
 
-    const updateDriveMode = (newDriveMode: VFDDriveModeOptions) => {
-        fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&drive_mode=${newDriveMode}`)
-            .then(() => {
-                setDriveMode(newDriveMode);
-                toast.success(`Drive mode changed for ${props.name}`)
-            })
-            .catch(() => {
-                toast.error(`Couldn't set drive mode for ${props.name}`)
-            });
+    const updateDriveMode = async (newDriveMode: VFDDriveModeOptions) => {
+        try {
+            const fakeState = (newDriveMode === "fwd") ? "on" : (newDriveMode === "rev") ? "off" : "null"
+            let resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&drive_mode=${fakeState}`)
+            if (!resp.ok) {
+                throw null;
+            }
+            setDriveMode(newDriveMode);
+            toast.success(`Drive mode changed for ${props.name}`)
+        } catch {
+            toast.error(`Couldn't set drive mode for ${props.name}`)
+        }
     }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetch(`http://localhost:3001/default/vfd_output?pump=${props.pumpID}`);
-                const dataString = await response.text();  // get the response as a string
-                const data = JSON.parse(JSON.parse(dataString));  // parse the string into a JSON object
-                console.log(data)
+                const data = await response.json();  // get the response as a string
+
+                if (data instanceof Array) {
+                    return;
+                }
 
                 let newDriveMode = "";
                 if (data['current_mode'] == 2052 || data['current_mode'] == 2048 || data['current_mode'] == 4) {
@@ -95,16 +102,17 @@ const VFDController = (props: VFDControllerProps) => {
                 }
             } catch (error) {
                 toast.error(`Couldn't get VFD state for ${props.name}!`)
+                console.error(error)
             }
         };
 
         fetchData();
         setDriveMode("rev");
 
-        //const intervalId = setInterval(() => {
-        //    fetchData();
-        //}, 1000);
-        //return () => clearInterval(intervalId);
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, 1000);
+        return () => clearInterval(intervalId);
     }, [props.pumpID, props.name, currentDriveMode, currentInputPower, currentOutputFrequency, currentOutputCurrent, currentOutputVoltage]);
 
     return (

@@ -2,11 +2,13 @@ import express from 'express';
 import { readdir, readFile, writeFile, mkdir } from 'fs';
 import { join } from 'path';
 import cors from 'cors';
-import { program, Option } from 'commander';
+import { Command } from 'commander';
 
+const program = new Command();
 program
-    .addOption(new Option('-p, --port <number>', 'port for backend webserver').env('PORT').preset(3001))
-    .addOption(new Option('-d, --dir [directory]', 'root storage directory').preset('/home/levitree/Desktop/Live-Data-Pathways'))
+    .name('server')
+    .option('-p, --port <number>', 'port for backend webserver', 3001)
+    .option('-d, --dir [directory]', 'root storage directory', '/home/levitree/Desktop/Live-Data-Pathways')
 
 program.parse();
 
@@ -193,7 +195,7 @@ app.get('/default/get_pressure_data', function (req, res) {
                 promises.push(
                     createDirectoryIfNotExist(sensor_dir)
                         .then(() => {
-                            return new Promise((resolve, reject) => {
+                            return new Promise((resolve) => {
                                 readdir(sensor_dir, (err, files) => {
                                     if (err || files.length === 0) {
                                         resolve(0.0);

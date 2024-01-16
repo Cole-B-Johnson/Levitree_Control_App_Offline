@@ -14,7 +14,11 @@ const AutopilotController = () => {
             return;
         }
         try {
-            await fetch(`http://localhost:3001/default/vfd_input?pump=${""}&drive_mode=${newToggleState}`)
+            const fakeState = newToggleState ? "fwd" : "rev"
+            const resp = await fetch(`http://localhost:3001/default/vfd_input?pump=autopilot&drive_mode=${fakeState}`)
+            if (!resp.ok) {
+                throw null;
+            }
             setToggle(newToggleState);
             toast.success(`Auto Pilot state changed`)
         } catch {
@@ -35,7 +39,10 @@ const AutopilotController = () => {
     const updateDistance = async () => {
         //Attempt to set "pump" state
         try {
-            await fetch(`http://localhost:3001/default/vfd_input?pump=autopilot&speed=${distance}`)
+            const resp = await fetch(`http://localhost:3001/default/vfd_input?pump=autopilot&speed=${distance}`)
+            if (!resp.ok) {
+                throw null;
+            }
             toast.success(`Auto Pilot level changed`)
         } catch {
             toast.error(`Couldn't set autopilot level!`);
