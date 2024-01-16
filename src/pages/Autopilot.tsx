@@ -1,4 +1,4 @@
-import AutopilotController from "@/components/AutopilotController"
+import AutopilotController from "@/components/AutopilotController";
 
 const Autopilot = () => {
   return (
@@ -9,7 +9,7 @@ const Autopilot = () => {
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Autopilot
+export default Autopilot;

@@ -23,10 +23,11 @@ const VFDDriveModeToggle = (props: VFDDriveModeToggleProps) => {
         onClick={() => {
           handleChange("fwd");
         }}
-        className={`h-14 flex-grow py-2 text-lg font-light ${props.value === "fwd"
-          ? "bg-blue-600 text-white"
-          : "bg-white text-blue-600 hover:bg-gray-100"
-          } rounded-s-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
+        className={`h-14 flex-grow py-2 text-lg font-light ${
+          props.value === "fwd"
+            ? "bg-blue-600 text-white"
+            : "bg-white text-blue-600 hover:bg-gray-100"
+        } rounded-s-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
       >
         Forward
       </button>
@@ -35,10 +36,11 @@ const VFDDriveModeToggle = (props: VFDDriveModeToggleProps) => {
         onClick={() => {
           handleChange("rev");
         }}
-        className={`h-14 flex-grow py-2 text-lg font-light ${props.value === "rev"
-          ? "bg-blue-600 text-white"
-          : "bg-white text-blue-600 hover:bg-gray-100"
-          } border border-blue-600 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
+        className={`h-14 flex-grow py-2 text-lg font-light ${
+          props.value === "rev"
+            ? "bg-blue-600 text-white"
+            : "bg-white text-blue-600 hover:bg-gray-100"
+        } border border-blue-600 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
       >
         Reverse
       </button>
@@ -47,10 +49,11 @@ const VFDDriveModeToggle = (props: VFDDriveModeToggleProps) => {
         onClick={() => {
           handleChange("stop");
         }}
-        className={`h-14 flex-grow py-2 text-lg font-light ${props.value === "stop"
-          ? "bg-blue-600 text-white"
-          : "bg-white text-blue-600 hover:bg-gray-100"
-          } rounded-e-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
+        className={`h-14 flex-grow py-2 text-lg font-light ${
+          props.value === "stop"
+            ? "bg-blue-600 text-white"
+            : "bg-white text-blue-600 hover:bg-gray-100"
+        } rounded-e-lg border border-blue-600  focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700`}
       >
         Off
       </button>

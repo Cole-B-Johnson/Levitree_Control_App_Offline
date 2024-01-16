@@ -1,69 +1,75 @@
-import VFDController from "@/components/VFDController"
-import { useEffect, useState } from "react"
+import VFDController from "@/components/VFDController";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import PressureGauges from "@/components/PressureGauges";
 
 const Controls = () => {
-  const [pressureData, setPressureData] = useState([0, 0, 0, 0, 0, 0])
-  const [outputPressureData, setOutputPressureData] = useState(0)
-  const [mixTankFillData, setMixTankFillData] = useState(0)
+  const [pressureData, setPressureData] = useState([0, 0, 0, 0, 0, 0]);
+  const [outputPressureData, setOutputPressureData] = useState(0);
+  const [mixTankFillData, setMixTankFillData] = useState(0);
 
   const fetchOutputPressureData = async () => {
     try {
-      const resp = await fetch('http://localhost:3001/default/get_pump_pressure')
+      const resp = await fetch(
+        "http://localhost:3001/default/get_pump_pressure",
+      );
       if (!resp.ok) {
-        throw null
+        throw null;
       }
-      const data = await resp.json()
-      setOutputPressureData(data)
+      const data = await resp.json();
+      setOutputPressureData(data);
     } catch (error) {
-      toast.error(`Couldn't fetch current output pressure`)
+      toast.error(`Couldn't fetch current output pressure`);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchOutputPressureData()
-    const intervalId = setInterval(fetchOutputPressureData, 250)
-    return () => clearInterval(intervalId)
-  }, [])
+    fetchOutputPressureData();
+    const intervalId = setInterval(fetchOutputPressureData, 250);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const fetchMixTankFillData = async () => {
     try {
-      const resp = await fetch('http://localhost:3001/default/get_mix_tank_distance')
+      const resp = await fetch(
+        "http://localhost:3001/default/get_mix_tank_distance",
+      );
       if (!resp.ok) {
-        throw null
+        throw null;
       }
-      const data = await resp.json()
-      setMixTankFillData(data)
+      const data = await resp.json();
+      setMixTankFillData(data);
     } catch (error) {
-      toast.error(`Couldn't fetch current mix tank fill level`)
+      toast.error(`Couldn't fetch current mix tank fill level`);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchMixTankFillData()
-    const intervalId = setInterval(fetchMixTankFillData, 250)
-    return () => clearInterval(intervalId)
-  }, [])
+    fetchMixTankFillData();
+    const intervalId = setInterval(fetchMixTankFillData, 250);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const fetchPressureData = async () => {
     try {
-      const resp = await fetch('http://localhost:3001/default/get_pressure_data')
+      const resp = await fetch(
+        "http://localhost:3001/default/get_pressure_data",
+      );
       if (!resp.ok) {
-        throw null
+        throw null;
       }
-      const data = await resp.json()
-      setPressureData(data)
+      const data = await resp.json();
+      setPressureData(data);
     } catch (error) {
-      toast.error(`Couldn't fetch current pressure sensor data`)
+      toast.error(`Couldn't fetch current pressure sensor data`);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchPressureData()
-    const intervalId = setInterval(fetchPressureData, 250)
-    return () => clearInterval(intervalId)
-  }, [])
+    fetchPressureData();
+    const intervalId = setInterval(fetchPressureData, 250);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <>
@@ -83,19 +89,13 @@ const Controls = () => {
             extraMeasurementUnits="in"
             extraMeasurementValue={mixTankFillData}
           />
-          <VFDController
-            name="Pulp Pump"
-            pumpID="Hydrapulper"
-          />
-          <VFDController
-            name="Auger Truck"
-            pumpID="Auger_Truck"
-          />
+          <VFDController name="Pulp Pump" pumpID="Hydrapulper" />
+          <VFDController name="Auger Truck" pumpID="Auger_Truck" />
           <PressureGauges values={pressureData} />
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Controls
+export default Controls;

@@ -1,14 +1,18 @@
-import express from 'express';
-import { readdir, readFile, writeFile, mkdir } from 'fs';
-import { join } from 'path';
-import cors from 'cors';
-import { Command } from 'commander';
+import express from "express";
+import { readdir, readFile, writeFile, mkdir } from "fs";
+import { join } from "path";
+import cors from "cors";
+import { Command } from "commander";
 
 const program = new Command();
 program
-    .name('server')
-    .option('-p, --port <number>', 'port for backend webserver', 3001)
-    .option('-d, --dir [directory]', 'root storage directory', '/home/levitree/Desktop/Live-Data-Pathways')
+  .name("server")
+  .option("-p, --port <number>", "port for backend webserver", 3001)
+  .option(
+    "-d, --dir [directory]",
+    "root storage directory",
+    "/home/levitree/Desktop/Live-Data-Pathways",
+  );
 
 program.parse();
 
@@ -16,258 +20,269 @@ const app = express();
 app.use(cors());
 
 function createDirectoryIfNotExist(dir) {
-    return new Promise((resolve, reject) => {
-        mkdir(dir, { recursive: true }, (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
+  return new Promise((resolve, reject) => {
+    mkdir(dir, { recursive: true }, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
     });
+  });
 }
 
-app.get('/default/get_pump_pressure', function (req, res) {
-    const base_path = `${program.opts().dir}/Pump_Pressure/`;
+app.get("/default/get_pump_pressure", function (req, res) {
+  const base_path = `${program.opts().dir}/Pump_Pressure/`;
 
-    createDirectoryIfNotExist(base_path)
-        .then(() => {
-            readdir(base_path, (err, files) => {
-                if (err || files.length === 0) {
-                    console.log('No files in directory:', err);
-                    res.json(0.0);
-                } else {
-                    const fileNames = files.map(fileName => {
-                        return {
-                            name: fileName,
-                            number: parseInt(fileName.split('_').pop())
-                        }
-                    });
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+          console.log("No files in directory:", err);
+          res.json(0.0);
+        } else {
+          const fileNames = files.map((fileName) => {
+            return {
+              name: fileName,
+              number: parseInt(fileName.split("_").pop()),
+            };
+          });
 
-                    const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
-                    const latestFilePath = join(base_path, latestFile.name);
+          const latestFile = fileNames.reduce((a, b) =>
+            a.number > b.number ? a : b,
+          );
+          const latestFilePath = join(base_path, latestFile.name);
 
-                    readFile(latestFilePath, 'utf8', (err, data) => {
-                        if (err) {
-                            console.log('Error reading file:', err);
-                            res.json(0.0);
-                        } else {
-                            res.json(parseFloat(data).toFixed(1));
-                        }
-                    });
-                }
-            });
-        })
-        .catch((err) => {
-            console.log('Error creating directory:', err);
-            return res.status(500).json({ 'message': err.message });
-        });
-});
-
-app.get('/default/get_mix_tank_distance', function (req, res) {
-    const base_path = `${program.opts().dir}/Depth_Sensor`;
-
-    createDirectoryIfNotExist(base_path)
-        .then(() => {
-            readdir(base_path, (err, files) => {
-                if (err || files.length === 0) {
-                    return res.json(0.0);
-                } else {
-                    const file_name = files.reduce((max, cur) => {
-                        const cur_number = parseInt(cur.split('_')[1]);
-                        return cur_number > parseInt(max.split('_')[1]) ? cur : max;
-                    });
-
-                    const file_content_path = join(base_path, file_name);
-                    readFile(file_content_path, 'utf8', (err, file_content) => {
-                        if (err) {
-                            console.log('Error reading file:', err);
-                            return res.json(0.0);
-                        } else {
-                            const data = JSON.parse(file_content);
-                            const processed_data = Math.round(parseFloat(data) * 10) / 10;
-                            return res.json(processed_data);
-                        }
-                    });
-                }
-            });
-        })
-        .catch((err) => {
-            console.log('Error creating directory:', err);
-            return res.status(500).json({ 'message': err.message });
-        });
-});
-
-app.get('/default/vfd_output', function (req, res) {
-    const pump = req.query.pump;
-    const base_path = `${program.opts().dir}/${pump}/From_VFD`;
-
-    createDirectoryIfNotExist(base_path)
-        .then(() => {
-            readdir(base_path, (err, files) => {
-                if (err || files.length === 0) {
-                    console.log('No files in directory:', err);
-                    res.json([0, 0, 0, 0, 0]);
-                } else {
-                    const fileNames = files.map(fileName => {
-                        return {
-                            name: fileName,
-                            number: parseInt(fileName.split('_').pop())
-                        }
-                    });
-
-                    const latestFile = fileNames.reduce((a, b) => a.number > b.number ? a : b);
-                    const latestFilePath = join(base_path, latestFile.name);
-
-                    readFile(latestFilePath, 'utf8', (err, data) => {
-                        if (err) {
-                            console.log('Error reading file:', err);
-                            res.json([]);
-                        } else {
-                            try {
-                                const jsonData = JSON.parse(data);
-                                res.json(jsonData);
-                                console.log(jsonData);
-                            } catch (error) {
-                                console.log('Error parsing JSON:', error);
-                                res.json({});
-                            }
-                        }
-                    });
-
-                }
-            });
-        })
-        .catch((err) => {
-            console.log('Error creating directory:', err);
-            return res.status(500).json({ 'message': err.message });
-        });
-});
-
-app.get('/default/vfd_input', function (req, res) {
-    const drive_mode_mapping = { "on": "fwd", "off": "rev", "null": "stop" };
-
-    const pump = req.query.pump;
-    const base_path = `${program.opts().dir}/${pump}/To_VFD`;
-
-    const filename = `command_${Math.floor(Date.now() / 1000)}.json`;
-    const file_path = join(base_path, filename);
-
-    let file_contents;
-
-    if (req.query.speed !== undefined) {
-        file_contents = { 'speed': req.query.speed };
-    } else if (req.query.drive_mode !== undefined) {
-        const drive_mode_value = req.query.drive_mode;
-        if (!drive_mode_mapping[drive_mode_value]) {
-            return res.status(500).json({ 'message': `Invalid drive_mode value: ${drive_mode_value}` });
-        }
-        file_contents = { 'drive_mode': drive_mode_mapping[drive_mode_value] };
-    } else {
-        return res.status(500).json({ 'message': 'Improper key (not speed or drive_mode)' });
-    }
-
-    createDirectoryIfNotExist(base_path).then(() => {
-        writeFile(file_path, JSON.stringify(file_contents), (err) => {
+          readFile(latestFilePath, "utf8", (err, data) => {
             if (err) {
-                console.log('Error writing file:', err);
-                return res.status(500).json({ 'message': err.message });
+              console.log("Error reading file:", err);
+              res.json(0.0);
+            } else {
+              res.json(parseFloat(data).toFixed(1));
             }
-            res.json({ 'message': `Successfully wrote data to ${file_path}` });
-        });
-    }).catch((err) => {
-        console.log('Error creating directory:', err);
-        return res.status(500).json({ 'message': err.message });
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
     });
 });
 
-app.get('/default/get_pressure_data', function (req, res) {
-    const base_path = `${program.opts().dir}/Pipe_Pressure_Sensors/CubeCell`;
+app.get("/default/get_mix_tank_distance", function (req, res) {
+  const base_path = `${program.opts().dir}/Depth_Sensor`;
 
-    createDirectoryIfNotExist(base_path)
-        .then(() => {
-            let sensor_readings = [];
-            let promises = [];
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+          return res.json(0.0);
+        } else {
+          const file_name = files.reduce((max, cur) => {
+            const cur_number = parseInt(cur.split("_")[1]);
+            return cur_number > parseInt(max.split("_")[1]) ? cur : max;
+          });
 
-            for (let sensor_number = 1; sensor_number <= 6; sensor_number++) {
-                const sensor_dir = join(base_path, String(sensor_number));
-
-                promises.push(
-                    createDirectoryIfNotExist(sensor_dir)
-                        .then(() => {
-                            return new Promise((resolve) => {
-                                readdir(sensor_dir, (err, files) => {
-                                    if (err || files.length === 0) {
-                                        resolve(0.0);
-                                    } else {
-                                        const file_name = files.reduce((max, cur) => {
-                                            const cur_number = parseInt(cur.split('_')[1]);
-                                            return cur_number > parseInt(max.split('_')[1]) ? cur : max;
-                                        });
-
-                                        const file_content_path = join(sensor_dir, file_name);
-                                        readFile(file_content_path, 'utf8', (err, file_content) => {
-                                            if (err) {
-                                                console.log('Error reading file:', err);
-                                                resolve(0.0);
-                                            } else {
-                                                const data = JSON.parse(file_content);
-                                                const processed_data = Math.round(parseFloat(data) * 10) / 10;
-                                                resolve(processed_data);
-                                            }
-                                        });
-                                    }
-                                });
-                            });
-                        })
-                );
+          const file_content_path = join(base_path, file_name);
+          readFile(file_content_path, "utf8", (err, file_content) => {
+            if (err) {
+              console.log("Error reading file:", err);
+              return res.json(0.0);
+            } else {
+              const data = JSON.parse(file_content);
+              const processed_data = Math.round(parseFloat(data) * 10) / 10;
+              return res.json(processed_data);
             }
-
-            Promise.all(promises).then((values) => {
-                res.json(values);
-            });
-        })
-        .catch((err) => {
-            console.log('Error creating directory:', err);
-            return res.status(500).json({ 'message': err.message });
-        });
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
 });
 
-app.get('/default/get_mix_tank_distance', function (req, res) {
-    const base_path = `${program.opts().dir}/Depth_Sensor`;
+app.get("/default/vfd_output", function (req, res) {
+  const pump = req.query.pump;
+  const base_path = `${program.opts().dir}/${pump}/From_VFD`;
 
-    createDirectoryIfNotExist(base_path)
-        .then(() => {
-            readdir(base_path, (err, files) => {
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+          console.log("No files in directory:", err);
+          res.json([0, 0, 0, 0, 0]);
+        } else {
+          const fileNames = files.map((fileName) => {
+            return {
+              name: fileName,
+              number: parseInt(fileName.split("_").pop()),
+            };
+          });
+
+          const latestFile = fileNames.reduce((a, b) =>
+            a.number > b.number ? a : b,
+          );
+          const latestFilePath = join(base_path, latestFile.name);
+
+          readFile(latestFilePath, "utf8", (err, data) => {
+            if (err) {
+              console.log("Error reading file:", err);
+              res.json([]);
+            } else {
+              try {
+                const jsonData = JSON.parse(data);
+                res.json(jsonData);
+                console.log(jsonData);
+              } catch (error) {
+                console.log("Error parsing JSON:", error);
+                res.json({});
+              }
+            }
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
+});
+
+app.get("/default/vfd_input", function (req, res) {
+  const drive_mode_mapping = { on: "fwd", off: "rev", null: "stop" };
+
+  const pump = req.query.pump;
+  const base_path = `${program.opts().dir}/${pump}/To_VFD`;
+
+  const filename = `command_${Math.floor(Date.now() / 1000)}.json`;
+  const file_path = join(base_path, filename);
+
+  let file_contents;
+
+  if (req.query.speed !== undefined) {
+    file_contents = { speed: req.query.speed };
+  } else if (req.query.drive_mode !== undefined) {
+    const drive_mode_value = req.query.drive_mode;
+    if (!drive_mode_mapping[drive_mode_value]) {
+      return res
+        .status(500)
+        .json({ message: `Invalid drive_mode value: ${drive_mode_value}` });
+    }
+    file_contents = { drive_mode: drive_mode_mapping[drive_mode_value] };
+  } else {
+    return res
+      .status(500)
+      .json({ message: "Improper key (not speed or drive_mode)" });
+  }
+
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      writeFile(file_path, JSON.stringify(file_contents), (err) => {
+        if (err) {
+          console.log("Error writing file:", err);
+          return res.status(500).json({ message: err.message });
+        }
+        res.json({ message: `Successfully wrote data to ${file_path}` });
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
+});
+
+app.get("/default/get_pressure_data", function (req, res) {
+  const base_path = `${program.opts().dir}/Pipe_Pressure_Sensors/CubeCell`;
+
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      let sensor_readings = [];
+      let promises = [];
+
+      for (let sensor_number = 1; sensor_number <= 6; sensor_number++) {
+        const sensor_dir = join(base_path, String(sensor_number));
+
+        promises.push(
+          createDirectoryIfNotExist(sensor_dir).then(() => {
+            return new Promise((resolve) => {
+              readdir(sensor_dir, (err, files) => {
                 if (err || files.length === 0) {
-                    return res.json(0.0);
+                  resolve(0.0);
                 } else {
-                    const file_name = files.reduce((max, cur) => {
-                        const cur_number = parseInt(cur.split('_')[1]);
-                        return cur_number > parseInt(max.split('_')[1]) ? cur : max;
-                    });
+                  const file_name = files.reduce((max, cur) => {
+                    const cur_number = parseInt(cur.split("_")[1]);
+                    return cur_number > parseInt(max.split("_")[1]) ? cur : max;
+                  });
 
-                    const file_content_path = join(base_path, file_name);
-                    readFile(file_content_path, 'utf8', (err, file_content) => {
-                        if (err) {
-                            console.log('Error reading file:', err);
-                            return res.json(0.0);
-                        } else {
-                            const data = JSON.parse(file_content);
-                            const processed_data = Math.round(parseFloat(data) * 10) / 10;
-                            return res.json(processed_data);
-                        }
-                    });
+                  const file_content_path = join(sensor_dir, file_name);
+                  readFile(file_content_path, "utf8", (err, file_content) => {
+                    if (err) {
+                      console.log("Error reading file:", err);
+                      resolve(0.0);
+                    } else {
+                      const data = JSON.parse(file_content);
+                      const processed_data =
+                        Math.round(parseFloat(data) * 10) / 10;
+                      resolve(processed_data);
+                    }
+                  });
                 }
+              });
             });
-        })
-        .catch((err) => {
-            console.log('Error creating directory:', err);
-            return res.status(500).json({ 'message': err.message });
-        });
+          }),
+        );
+      }
+
+      Promise.all(promises).then((values) => {
+        res.json(values);
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
+});
+
+app.get("/default/get_mix_tank_distance", function (req, res) {
+  const base_path = `${program.opts().dir}/Depth_Sensor`;
+
+  createDirectoryIfNotExist(base_path)
+    .then(() => {
+      readdir(base_path, (err, files) => {
+        if (err || files.length === 0) {
+          return res.json(0.0);
+        } else {
+          const file_name = files.reduce((max, cur) => {
+            const cur_number = parseInt(cur.split("_")[1]);
+            return cur_number > parseInt(max.split("_")[1]) ? cur : max;
+          });
+
+          const file_content_path = join(base_path, file_name);
+          readFile(file_content_path, "utf8", (err, file_content) => {
+            if (err) {
+              console.log("Error reading file:", err);
+              return res.json(0.0);
+            } else {
+              const data = JSON.parse(file_content);
+              const processed_data = Math.round(parseFloat(data) * 10) / 10;
+              return res.json(processed_data);
+            }
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("Error creating directory:", err);
+      return res.status(500).json({ message: err.message });
+    });
 });
 
 app.listen(program.opts().port, function () {
-    console.log(`Local server is running on http://localhost:${program.opts().port}`);
-    console.log(`Using app storage directory: ${program.opts().dir}`);
+  console.log(
+    `Local server is running on http://localhost:${program.opts().port}`,
+  );
+  console.log(`Using app storage directory: ${program.opts().dir}`);
 });
