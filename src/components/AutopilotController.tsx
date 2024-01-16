@@ -14,7 +14,7 @@ const AutopilotController = () => {
             return;
         }
         try {
-            const fakeState = newToggleState ? "fwd" : "rev"
+            const fakeState = newToggleState ? "on" : "off"
             const resp = await fetch(`http://localhost:3001/default/vfd_input?pump=autopilot&drive_mode=${fakeState}`)
             if (!resp.ok) {
                 throw null;
