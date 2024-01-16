@@ -1,10 +1,9 @@
 import VFDController from "@/components/VFDController"
-import AutopilotController from "@/components/AutopilotController"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast";
 import PressureGauges from "@/components/PressureGauges";
 
-const Home = () => {
+const Controls = () => {
   const [pressureData, setPressureData] = useState([0, 0, 0, 0, 0, 0])
   const [outputPressureData, setOutputPressureData] = useState(0)
   const [mixTankFillData, setMixTankFillData] = useState(0)
@@ -70,7 +69,6 @@ const Home = () => {
     <>
       <section>
         <div className="flex flex-col gap-12">
-          <AutopilotController />
           <VFDController
             name={`8" Pump`}
             pumpID="3_Progressive_Cavity_Pump"
@@ -100,4 +98,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Controls

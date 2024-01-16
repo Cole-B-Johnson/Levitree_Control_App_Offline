@@ -11,6 +11,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@nivo/line": "^0.84.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "commander": "^11.1.0",
     "cors": "^2.8.5",

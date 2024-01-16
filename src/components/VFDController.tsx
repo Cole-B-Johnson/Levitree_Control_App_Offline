@@ -31,7 +31,7 @@ const VFDController = (props: VFDControllerProps) => {
 
     const updateFrequency = async () => {
         try {
-            let resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&speed=${outputFreq}`)
+            const resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&speed=${outputFreq}`)
             if (!resp.ok) {
                 throw null;
             }
@@ -44,7 +44,7 @@ const VFDController = (props: VFDControllerProps) => {
     const updateDriveMode = async (newDriveMode: VFDDriveModeOptions) => {
         try {
             const fakeState = (newDriveMode === "fwd") ? "on" : (newDriveMode === "rev") ? "off" : "null"
-            let resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&drive_mode=${fakeState}`)
+            const resp = await fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&drive_mode=${fakeState}`)
             if (!resp.ok) {
                 throw null;
             }
@@ -119,7 +119,7 @@ const VFDController = (props: VFDControllerProps) => {
         <>
             <div className="grid grid-cols-6 gap-2">
                 <div className="col-span-6 mt-2 flex flex-col justify-start gap-10 lg:col-span-2">
-                    <h1 className="font-sans text-4xl font-light">{props.name}</h1>
+                    <h1 className="font-sans text-3xl font-light">{props.name}</h1>
                     <VFDDriveModeToggle
                         value={driveMode}
                         onChange={updateDriveMode}
