@@ -17,7 +17,7 @@ const Home = () => {
           <VFDController
             name="Water Pump"
             pumpID="4_Progressive_Cavity_Pump"
-            extraMeasurementName="Mix Tank Fill Level"
+            extraMeasurementName="Mix Tank Level"
             extraMeasurementUnits="in"
             extraMeasurementValue={0}
           />

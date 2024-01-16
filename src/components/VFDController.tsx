@@ -47,7 +47,7 @@ const VFDController = (props: VFDControllerProps) => {
                         onChange={updateDriveMode}
                     ></VFDDriveModeToggle>
                 </div>
-                <div className="col-span-6 mr-4 mt-0 flex flex-col gap-2 p-4 pb-0 pt-0 lg:col-span-4">
+                <div className="col-span-6 mr-4 mt-0 flex flex-col gap-1 p-4 pb-0 pt-0 lg:col-span-4">
                     <div className="flex h-min items-center justify-start gap-4 p-4">
                         <input
                             type="range"
@@ -61,7 +61,7 @@ const VFDController = (props: VFDControllerProps) => {
                         />
                         <div className="w-6 text-lg font-bold">{outputFreq}Hz</div>
                     </div>
-                    <div className="flex h-min items-center justify-start gap-4 p-4 pr-0">
+                    <div className="flex h-min justify-start items-end gap-4 p-4 pr-0">
                         <div className="flex w-44 flex-col items-center gap-2">
                             <h6 className="w-full text-center font-semibold">Current Mode</h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
@@ -74,7 +74,7 @@ const VFDController = (props: VFDControllerProps) => {
                         </div>
                         <div className="flex w-44 flex-col items-center gap-2">
                             <h6 className="w-full text-center font-semibold">
-                                Output frequency
+                                Output freq
                             </h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
                                 {0}Hz
@@ -106,7 +106,7 @@ const VFDController = (props: VFDControllerProps) => {
                             props.extraMeasurementValue !== undefined ? (
                             <>
                                 <div className="flex-grow"></div>
-                                <div className="flex w-44 flex-col items-center">
+                                <div className="flex w-44 flex-col items-center gap-2">
                                     <h6 className="w-full text-center font-semibold">
                                         {props.extraMeasurementName}
                                     </h6>
