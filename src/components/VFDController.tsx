@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import VFDDriveModeToggle, { VFDDriveModeOptions } from "./VFDDriveModeToggle";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type VFDControllerProps = {
     name: string;
@@ -13,6 +13,12 @@ type VFDControllerProps = {
 const VFDController = (props: VFDControllerProps) => {
     const [outputFreq, setOutputFreq] = useState(0);
     const [driveMode, setDriveMode] = useState("stop");
+    const [currentDriveMode, setCurrentDriveMode] = useState("stop");
+    const [currentOutputFrequency, setCurrentOutputFrequency] = useState(0);
+    const [currentInputPower, setCurrentInputPower] = useState(0);
+    const [currentOutputCurrent, setCurrentOutputCurrent] = useState(0);
+    const [currentOutputVoltage, setCurrentOutputVoltage] = useState(0);
+
     const frequencySliderChanged = (event: ChangeEvent<HTMLInputElement>) => {
         const newFreq = parseInt(event.target.value);
 
@@ -24,18 +30,82 @@ const VFDController = (props: VFDControllerProps) => {
     };
 
     const updateFrequency = () => {
-        return;
+        fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&speed=${outputFreq}`)
+            .then(() => {
+                toast.success(`Speed changed for ${props.name}`)
+            })
+            .catch(() => {
+                toast.error(`Couldn't set speed for ${props.name}`)
+            });
     };
 
     const updateDriveMode = (newDriveMode: VFDDriveModeOptions) => {
         fetch(`http://localhost:3001/default/vfd_input?pump=${props.pumpID}&drive_mode=${newDriveMode}`)
             .then(() => {
                 setDriveMode(newDriveMode);
+                toast.success(`Drive mode changed for ${props.name}`)
             })
             .catch(() => {
                 toast.error(`Couldn't set drive mode for ${props.name}`)
             });
     }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3001/default/vfd_output?pump=${props.pumpID}`);
+                const dataString = await response.text();  // get the response as a string
+                const data = JSON.parse(JSON.parse(dataString));  // parse the string into a JSON object
+                console.log(data)
+
+                let newDriveMode = "";
+                if (data['current_mode'] == 2052 || data['current_mode'] == 2048 || data['current_mode'] == 4) {
+                    newDriveMode = 'stop';
+                }
+                else if (data['current_mode'] == 2049 || data['current_mode'] == 1) {
+                    newDriveMode = 'fwd';
+                }
+                else if (data['current_mode'] == 2050 || data['current_mode'] == 2) {
+                    newDriveMode = 'rev';
+                }
+
+                if (currentDriveMode !== newDriveMode) {
+                    setCurrentDriveMode(newDriveMode);
+                    setDriveMode(newDriveMode);
+                }
+
+                const newInputPower = data['input_power'];
+                if (currentInputPower !== newInputPower) {
+                    setCurrentInputPower(newInputPower);
+                }
+
+                const newOutputFrequency = data['output_frequency'] / 100;
+                if (currentOutputFrequency !== newOutputFrequency) {
+                    setCurrentOutputFrequency(newOutputFrequency);
+                }
+
+                const newOutputCurrent = data['output_current'] / 100;
+                if (currentOutputCurrent !== newOutputCurrent) {
+                    setCurrentOutputCurrent(newOutputCurrent);
+                }
+
+                const newOutputVoltage = data['output_voltage'];
+                if (currentOutputVoltage !== newOutputVoltage) {
+                    setCurrentOutputVoltage(newOutputVoltage);
+                }
+            } catch (error) {
+                toast.error(`Couldn't get VFD state for ${props.name}!`)
+            }
+        };
+
+        fetchData();
+        setDriveMode("rev");
+
+        //const intervalId = setInterval(() => {
+        //    fetchData();
+        //}, 1000);
+        //return () => clearInterval(intervalId);
+    }, [props.pumpID, props.name, currentDriveMode, currentInputPower, currentOutputFrequency, currentOutputCurrent, currentOutputVoltage]);
 
     return (
         <>
@@ -65,9 +135,9 @@ const VFDController = (props: VFDControllerProps) => {
                         <div className="flex w-44 flex-col items-center gap-2">
                             <h6 className="w-full text-center font-semibold">Current Mode</h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
-                                {driveMode === "fwd"
+                                {currentDriveMode === "fwd"
                                     ? "Forward"
-                                    : driveMode === "rev"
+                                    : currentDriveMode === "rev"
                                         ? "Reverse"
                                         : "Off"}
                             </div>
@@ -77,13 +147,13 @@ const VFDController = (props: VFDControllerProps) => {
                                 Output freq
                             </h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
-                                {0}Hz
+                                {currentOutputFrequency}Hz
                             </div>
                         </div>
                         <div className="flex w-44 flex-col items-center gap-2">
                             <h6 className="w-full text-center font-semibold">Input power</h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
-                                {0} W
+                                {currentInputPower} W
                             </div>
                         </div>
                         <div className="flex w-44 flex-col items-center gap-2">
@@ -91,7 +161,7 @@ const VFDController = (props: VFDControllerProps) => {
                                 Output current
                             </h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
-                                {0} A
+                                {currentOutputCurrent} A
                             </div>
                         </div>
                         <div className="flex w-44 flex-col items-center gap-2">
@@ -99,7 +169,7 @@ const VFDController = (props: VFDControllerProps) => {
                                 Output voltage
                             </h6>
                             <div className="w-full rounded-md bg-gray-300 py-1 text-center text-lg font-bold">
-                                {0} V
+                                {currentOutputVoltage} V
                             </div>
                         </div>
                         {props.extraMeasurementName !== undefined &&

@@ -7,14 +7,19 @@ const AutopilotController = () => {
     const [toggle, setToggle] = useState("off");
     const [currentLevel] = useState(0);
 
-    const toggleChanged = (event: string) => {
+    const toggleChanged = async (event: string) => {
         const newToggleState = event;
 
         if (newToggleState === toggle) {
             return;
         }
-
-        setToggle(newToggleState);
+        try {
+            await fetch(`http://localhost:3001/default/vfd_input?pump=${""}&drive_mode=${newToggleState}`)
+            setToggle(newToggleState);
+            toast.success(`Auto Pilot state changed`)
+        } catch {
+            toast.error(`Couldn't set Auto Pilot state!`)
+        }
     };
 
     const distanceSliderChanged = (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,13 +32,14 @@ const AutopilotController = () => {
         setDistance(newDistance);
     };
 
-    const updateDistance = () => {
+    const updateDistance = async () => {
         //Attempt to set "pump" state
-        fetch(
-            `http://localhost:3001/default/vfd_input?pump=autopilot&speed=${distance}`,
-        ).catch(() => {
+        try {
+            await fetch(`http://localhost:3001/default/vfd_input?pump=autopilot&speed=${distance}`)
+            toast.success(`Auto Pilot level changed`)
+        } catch {
             toast.error(`Couldn't set autopilot level!`);
-        });
+        }
     }
 
     return (
